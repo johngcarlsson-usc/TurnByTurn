@@ -1089,303 +1089,6 @@ No lower bound: the answer is a good solution, not a certified optimum
 
 \end_layout
 
-\begin_layout Frame
-
-\begin_inset Argument 4
-status collapsed
-
-
-\begin_layout Standard
-The five demos as optimization problems
-\end_layout
-
-\end_inset
-
-
-\end_layout
-
-\begin_deeper
-\begin_layout Standard
-\size footnotesize
-
-\begin_inset Tabular 
-<lyxtabular version="3" rows="6" columns="3">
-<features tabularvalignment="middle" tabularwidth="0pt">
-<column alignment="none" valignment="top" special="@{}l">
-<column alignment="left" valignment="top">
-<column alignment="none" valignment="top" special="l@{}">
-<row>
-<cell alignment="none" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-Request 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-Problem 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="none" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-Solved by 
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="none" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-1. Gas on the right 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-best of 
-\begin_inset Formula $n$
-\end_inset
-
- filtered candidates 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="none" valignment="top" topline="true" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-one matrix, minimum 
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="none" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-2. Coffee an hour in 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-same, filtered by time on route 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="none" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-one matrix, minimum 
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="none" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-3. Stay off 880 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-shortest path, edges removed 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="none" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-re-solve until no avoided edge 
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="none" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-4. Pharmacy, groceries, gas 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-generalized TSP, time windows 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="none" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-OR-Tools, 1 vehicle 
-\end_layout
-
-\end_inset
-</cell>
-</row>
-<row>
-<cell alignment="none" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-5. Split with my wife 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="left" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-pickup–delivery, min total + span 
-\end_layout
-
-\end_inset
-</cell>
-<cell alignment="none" valignment="top" usebox="none">
-\begin_inset Text
-
-\begin_layout Standard
-
-\size footnotesize
-OR-Tools, 2 vehicles 
-\end_layout
-
-\end_inset
-</cell>
-</row>
-</lyxtabular>
-
-\end_inset
-\end_layout
-\begin_layout Standard
-
-\size footnotesize
-
-\begin_inset VSpace medskip
-\end_inset
-
-
-\end_layout
-
-\begin_layout Itemize
-
-\size footnotesize
-OR-Tools only where order and choice interact; the rest is exact and instant 
-\end_layout
-
-\begin_layout Itemize
-
-\size footnotesize
-Stops in a stated order: layered shortest path, exact in 
-\begin_inset Formula $O(k m^2)$
-\end_inset
-
- for 
-\begin_inset Formula $k$
-\end_inset
-
- stops of 
-\begin_inset Formula $m$
-\end_inset
-
- candidates 
-\end_layout
-
-\begin_layout Itemize
-
-\size footnotesize
-Demo 4 has 
-\begin_inset Formula $1296$
-\end_inset
-
- tours; local search finds a good one in 1 s with no proof, and the verifier checks the deadlines, not optimality 
-\end_layout
-
-\end_deeper
-\begin_layout Standard
-
-\begin_inset Separator plain
-
-\end_inset
-
-
-\end_layout
-
 \begin_layout Section
 Approach
 \end_layout
@@ -5061,6 +4764,303 @@ scripts/capture_talk.py
 \end_deeper
 \begin_layout Standard
 \begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+The five requests as optimization problems
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\size footnotesize
+
+\begin_inset Tabular 
+<lyxtabular version="3" rows="6" columns="3">
+<features tabularvalignment="middle" tabularwidth="0pt">
+<column alignment="none" valignment="top" special="@{}l">
+<column alignment="left" valignment="top">
+<column alignment="none" valignment="top" special="l@{}">
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Request 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Problem 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Solved by 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+1. Gas on the right 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+best of 
+\begin_inset Formula $n$
+\end_inset
+
+ filtered candidates 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+one matrix, minimum 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+2. Coffee an hour in 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+same, filtered by time on route 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+one matrix, minimum 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+3. Stay off 880 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+shortest path, edges removed 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+re-solve until no avoided edge 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+4. Pharmacy, groceries, gas 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+generalized TSP, time windows 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+OR-Tools, 1 vehicle 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+5. Split with my wife 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+pickup–delivery, min total + span 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+OR-Tools, 2 vehicles 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+\end_layout
+\begin_layout Standard
+
+\size footnotesize
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\size footnotesize
+OR-Tools only where order and choice interact; the rest is exact and instant 
+\end_layout
+
+\begin_layout Itemize
+
+\size footnotesize
+Stops in a stated order: layered shortest path, exact in 
+\begin_inset Formula $O(k m^2)$
+\end_inset
+
+ for 
+\begin_inset Formula $k$
+\end_inset
+
+ stops of 
+\begin_inset Formula $m$
+\end_inset
+
+ candidates 
+\end_layout
+
+\begin_layout Itemize
+
+\size footnotesize
+Request 4 has 
+\begin_inset Formula $1296$
+\end_inset
+
+ tours; local search finds a good one in 1 s with no proof, and the verifier checks the deadlines, not optimality 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
 \end_inset
 
 
