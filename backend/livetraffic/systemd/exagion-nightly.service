@@ -1,0 +1,11 @@
+[Unit]
+Description=Exagion nightly scoring (bus probes, PeMS detectors, fusion model)
+
+[Service]
+# per-machine settings, optional (README: "Running it unattended")
+EnvironmentFile=-%h/.config/exagion.env
+Type=oneshot
+Nice=19
+WorkingDirectory=%h/TurnByTurn/backend
+Environment=PYTHONPATH=.
+ExecStart=/usr/bin/bash -c 'exec venv/bin/python -u -m livetraffic.nightly >> $HOME/geo/livetraffic/nightly.log 2>&1'

@@ -1,0 +1,439 @@
+% FOSS4G 2026: Natural-Language Routing on an Open Stack.
+% Default Beamer theme. Build: tectonic talk.tex (screenshots from ../screenshots, made by
+% scripts/capture_talk.py). Speaker notes for every slide: ../README.md.
+\documentclass[aspectratio=169]{beamer}
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\usepackage{amsmath,amssymb}
+\usepackage{graphicx}
+\graphicspath{{../screenshots/}}
+
+\newcommand{\shot}[1]{\includegraphics[width=\linewidth]{#1}}
+\newcommand{\api}[1]{\texttt{#1}}
+
+\title{Natural-Language Routing on an Open Stack}
+\subtitle{Language becomes constraints; constraints become geometry}
+\author{John Gunnar Carlsson \and Andreas Royset}
+\date{FOSS4G 2026 \\ Wednesday, November 4, 15:00 \\ Compagno}
+
+\begin{document}
+
+\begin{frame}
+  \titlepage
+\end{frame}
+
+% ------------------------------------------------------------------------------------------------
+\section{Approach}
+
+\begin{frame}{Maps expose toggles; requests are constraints}
+  \begin{itemize}
+    \item What navigation products accept:
+      \begin{itemize}
+        \item global switches: avoid highways, tolls, ferries
+        \item search ranked by distance from the user (``coffee near me'')
+      \end{itemize}
+    \item What people actually ask for:
+      \begin{itemize}
+        \item ``gas on the right, so I don't turn across traffic''
+        \item ``coffee about an hour from now''
+        \item ``stay off 880''
+        \item ``between the two of us, who picks up our daughter?''
+      \end{itemize}
+    \item Each is a constraint expressible in plain language and computable with open tools
+  \end{itemize}
+\end{frame}
+
+\begin{frame}[fragile]{Approach: the model fills in a form}
+  \begin{columns}[T]
+    \begin{column}{0.48\textwidth}
+      \begin{itemize}
+        \item Language $\to$ typed constraint object (JSON schema, structured output)
+        \item Constraints $\to$ geometry and solver input, by deterministic code
+        \item The model never routes, searches, or optimizes
+        \item No coordinates, no store names; no start: \texttt{origin: null} is the phone's GPS
+        \item Every result is re-checked against the final route
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+\begin{semiverbatim}\scriptsize
+\{
+  "origin": null,
+  "destination": "home",
+  "stops": [
+    \{"kind": "errand", "what": "pharmacy",
+     "closesAt": "18:00"\},
+    \{"kind": "errand", "what": "groceries"\},
+    \{"kind": "errand", "what": "gas"\}
+  ],
+  "stopOrder": "any",
+  "arriveBy": "18:15"
+\}
+\end{semiverbatim}
+      {\footnotesize ``I need a pharmacy before it closes at six, groceries, and gas, in any order, and I have to be home by 6:15.''}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Tools}
+  \begin{itemize}
+    \item Valhalla (OpenStreetMap graph): \api{/route}, \api{/sources\_to\_targets}, \api{/trace\_attributes}, \api{exclude\_locations}, time-dependent costing
+    \item Overture Maps places (GeoParquet, 273k in the Bay Area), queried in place with DuckDB
+    \item Photon and Nominatim: OSM geocoding, self-hosted
+    \item OR-Tools routing: disjunctions, time windows, pickup and delivery
+    \item Language model behind a JSON schema: Ollama locally, or any OpenAI-compatible API
+    \item Caltrans PeMS loop detectors: hour-of-week speeds loaded as Valhalla predicted traffic
+    \item Ferrostar (Rust $\to$ WebAssembly): turn-by-turn in the browser
+    \item One laptop, 12 GB GPU; all five demos also run on a local qwen3.6 35B-A3B (18--61 s each)
+  \end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------------------------------------
+\section{Five requests}
+
+\begin{frame}{Five requests from the Great Mall, Milpitas}
+  \begin{itemize}
+    \item Start: a GPS fix posted by the phone; no request states where the driver is
+    \item Requests, and what each exercises:
+      \begin{enumerate}
+        \item Gas on the right, on the way to Levi's Stadium \\ \quad {\small DuckDB on Overture; arrival-side geometry}
+        \item Coffee about an hour into the drive to Sacramento \\ \quad {\small maneuver times; Valhalla matrix}
+        \item Oakland airport, but stay off 880 \\ \quad {\small map-match, exclude, re-route}
+        \item Pharmacy before 6, groceries, gas, home by 6:15 \\ \quad {\small OR-Tools: disjunctions and time windows}
+        \item Split the afternoon's tasks between two drivers \\ \quad {\small OR-Tools: two vehicles, pickup and delivery}
+      \end{enumerate}
+    \item All screenshots come from the live path (model in the loop), via \texttt{scripts/capture\_talk.py}
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{1. ``Gas on the right, on the way''}
+  \begin{columns}[T]
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}
+        \item Candidates: Overture stations within 80 m of the road, right of travel
+        \item Decision: heading of the final route over its last 15 m into the stop
+        \item Arrival on the left $\Rightarrow$ reject and re-pick
+        \item Result: a 76 on W.~Calaveras Blvd, +0.5 min
+        \item To SJC: no candidate (freeway the whole way); reported as such
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \shot{gm-gas-right.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{2. ``Coffee about an hour from now''}
+  \begin{columns}[T]
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}
+        \item Model output: \texttt{afterMinutes: 60}
+        \item Search the stretch driven 54--66 min in, from per-maneuver times
+        \item Empty (Benicia bridge) $\Rightarrow$ widen to $\pm 12$ min, with a note
+        \item Smallest detour: Peet's, Pleasant Hill, +0.3 min, reached at 50 min
+        \item Destination: the conference hotel
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \shot{gm-coffee-hour.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Candidates and detours}
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}\small
+      \begin{itemize}
+        \item Prefilter by distance to the route (2 km; 80 m for ``on the right'')
+        \item Decide by time:
+          \[ \delta(p) = t(o,p) + t(p,d) - t(o,d) \]
+        \item Two thin matrices ($1\times n$, $n\times 1$) screen $n$ candidates; the best 6 per errand go on
+        \item Time window: with $T(x)$ the elapsed time at $x$ on the base route,
+          \[ S(\tau) = \{x : |T(x)-\tau| \le w\} \]
+          with $w=\max(5,\, 0.1\tau)$ min, widened to $2w$, $3w$ if empty
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+\begin{semiverbatim}\scriptsize
+SELECT id, name, category, lat, lon
+FROM read_parquet('places.parquet')
+WHERE lat BETWEEN ? AND ?
+  AND lon BETWEEN ? AND ?
+  AND category IN ('coffee_shop', 'cafe')
+  AND coalesce(confidence, 0) >= 0.5
+
+# shapely: offset and position on the route
+offset = chunks[tree.nearest(pt)].distance(pt)
+along  = line.project(pt) / line.length
+
+# Valhalla /sources_to_targets
+to_c   = matrix([origin], cands)[0][0]
+from_c = [r[0] for r in matrix(cands, [dest])[0]]
+detour = [a + b - direct
+          for a, b in zip(to_c, from_c)]
+\end{semiverbatim}
+      {\footnotesize \texttt{nlroute/places.py}, \texttt{planner.py} (trimmed)}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{3. ``Oakland airport, but stay off 880''}
+  \begin{columns}[T]
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}
+        \item ``Avoid I-880'' is a predicate on graph edges, not a toggle
+        \item Route $\to$ map-match $\to$ exclude violating edges $\to$ re-route
+        \item Result: I-680 and I-580, 63 min; +20 min over the plain route (dotted)
+        \item First run resolved ``Oakland airport'' to an airport hotel; a named kind must now match the OSM tag
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \shot{gm-no-880.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Avoidance as a fixed-point iteration}
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}\small
+      \begin{itemize}
+        \item Valhalla excludes points, not predicates. With rule $\varphi$:
+          \begin{align*}
+            X_0 &= \emptyset \\
+            r_k &= \mathrm{route}(o, d;\, X_k) \\
+            B_k &= \{e \in E(r_k) : \varphi(e)\} \\
+            X_{k+1} &= X_k \cup m(B_k)
+          \end{align*}
+          $m$: edge midpoints. Stop when $B_k=\emptyset$.
+        \item $X_k$ is increasing; at most 8 rounds
+        \item This run: $k=0$: 43.5 min, $|B_0|=122$; \\ $k=1$: 63.1 min, $B_1=\emptyset$. Total 121 ms.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+\begin{semiverbatim}\scriptsize
+for attempt in range(MAX_EXCLUSION_ROUNDS):
+    trip = valhalla.route(points, costing, opts,
+                          exclude_locations)
+    # /trace_attributes: the edges driven
+    edges = valhalla.edges_for_route(trip, costing)
+    bad = [e for e in edges
+           if any(r.violates(e) for r in rules)]
+    if not bad:
+        break
+    new = [midpoint(e) for e in bad
+           if midpoint(e) not in exclude_locations]
+    if not new:
+        break     # stuck: the verifier reports it
+    exclude_locations.extend(new)
+\end{semiverbatim}
+      {\footnotesize \texttt{nlroute/planner.py} (trimmed)}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{4. ``Three errands, any order, home by 6:15''}
+  \begin{columns}[T]
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}
+        \item ``A pharmacy'' has hundreds of answers: choosing one is optimization, not language
+        \item 6 candidates per errand, by detour; one Valhalla matrix over all
+        \item OR-Tools chooses which pharmacy, grocery, and station, and the order
+        \item Result: Walgreens at 5:23 (closes 6:00); home at 5:25 (by 6:15)
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \shot{gm-errands.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Errands as a generalized TSP with time windows}
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}\small
+      \begin{itemize}
+        \item Groups $G_1,\dots,G_m$ (pharmacies, groceries, stations); arc times $t_{ij}$, stop times $s_i$
+          \begin{align*}
+            \min\ & \textstyle\sum_{i,j} t_{ij}\, x_{ij} \\
+            \text{s.t.}\ & \textstyle\sum_{i \in G_k} y_i = 1 \quad \forall k \\
+            & T_j \ge T_i + s_i + t_{ij} \ \text{ if } x_{ij}=1 \\
+            & T_i \le \text{close}_i, \quad T_{\text{home}} \le \text{deadline}
+          \end{align*}
+        \item ``Exactly one'': a disjunction with max cardinality 1 and penalty $10^7$; a skipped group is reported infeasible
+        \item 20 nodes: matrix 0.4 s; guided local search, 1 s limit; path re-costed from the matrix
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+\begin{semiverbatim}\scriptsize
+manager = RoutingIndexManager(n, 1, [orig], [home])
+routing = RoutingModel(manager)
+cb = routing.RegisterTransitCallback(transit)
+routing.SetArcCostEvaluatorOfAllVehicles(cb)
+routing.AddDimension(cb, 0, 24*3600, True, "Time")
+T = routing.GetDimensionOrDie("Time")
+for group in groups:
+    routing.AddDisjunction(
+        [manager.NodeToIndex(i) for i in group],
+        10**7, 1)
+for node, latest in windows.items():
+    T.CumulVar(manager.NodeToIndex(node)) \textbackslash
+     .SetMax(latest)
+T.CumulVar(routing.End(0)).SetMax(deadline)
+\end{semiverbatim}
+      {\footnotesize \texttt{nlroute/solver.py}: \texttt{solve\_any\_order} (trimmed)}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{5. ``Between the two of us, who should do what?''}
+  \begin{columns}[T]
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}
+        \item Tasks: pick up our daughter at school, home by 3:30; groceries (30 min, as stated); a CVS
+        \item Drivers: me at the Great Mall, my wife at Fremont BART
+        \item Result: me: CVS, school, home 3:15; my wife: Whole Foods
+        \item Both done 3:34; either alone: 3:51 or 4:11
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \shot{gm-team.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}[fragile]{Two vehicles, pickup and delivery}
+  \begin{columns}[T]
+    \begin{column}{0.44\textwidth}\small
+      \begin{itemize}
+        \item Vehicles $v\in\{1,2\}$ start where each driver is; open routes via a virtual end with $t_{ie}=0$
+        \item Pickup $p$, drop $d$: same vehicle, $T_p \le T_d$, $T_d \le$ 15:30
+        \item Objective: total time of both drivers plus the span
+          \begin{align*}
+            \min\ & \textstyle\sum_v \sum_{i,j} (t_{ij}+s_i)\, x^v_{ij} \\
+            & + \textstyle\max_v T_{e}^v - \min_v T_{s}^v
+          \end{align*}
+        \item The span term makes splitting worthwhile. 20 nodes: matrix 0.3 s, search 2 s
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.54\textwidth}
+\begin{semiverbatim}\scriptsize
+manager = RoutingIndexManager(n + 1, 2,
+                              [me, wife], [end, end])
+routing = RoutingModel(manager)
+T.SetGlobalSpanCostCoefficient(1)
+for group in groups:     # any grocery, any CVS
+    routing.AddDisjunction(
+        [manager.NodeToIndex(i) for i in group],
+        10**7, 1)
+p = manager.NodeToIndex(school)
+d = manager.NodeToIndex(home)
+routing.AddPickupAndDelivery(p, d)
+solver.Add(routing.VehicleVar(p)
+           == routing.VehicleVar(d))
+solver.Add(T.CumulVar(p) <= T.CumulVar(d))
+T.CumulVar(d).SetMax(deadline)
+\end{semiverbatim}
+      {\footnotesize \texttt{nlroute/solver.py}: \texttt{solve\_team} (trimmed)}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{Sending a driver their part}
+  \begin{columns}[T]
+    \begin{column}{0.66\textwidth}
+      \begin{itemize}
+        \item ``Send to Wife'': a link with an unguessable token, valid 30 minutes; no account, no app
+        \item The page shows her part of the plan and can share her location back
+        \item ``Start turn-by-turn'': Ferrostar in her browser, on the plan's exact route request (exclusions kept on reroute)
+        \item On expiry the position is deleted and the link returns 410
+        \item Limits: browsers share location only while the page is open; Google Maps location sharing has no API
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.26\textwidth}
+      \includegraphics[height=0.78\textheight,keepaspectratio]{gm-team-phone.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% ------------------------------------------------------------------------------------------------
+\section{Verification}
+
+\begin{frame}{Every route is checked independently of the planner}
+  \begin{itemize}
+    \item The final line is map-matched again (\api{/trace\_attributes}); checks read those edges, not the planner's state
+    \item Checked: stops reached and in order; roads and areas avoided; detour bounds; side of road on arrival; ``about $N$ min in''; closing times; deadline; pickup before drop in the same car
+    \item A failed check is shown with the measured value; the route is still drawn
+    \item Retry loops fix loud failures; the verifier makes silent failures loud
+    \item Silent failures seen in practice: an exclusion polygon rejected by the engine, a stop skipped by the solver, a deadline missed by a relaxed solve
+  \end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------------------------------------
+\section{Where it breaks}
+
+\begin{frame}{Data: the verifier cannot catch a wrong category}
+  \begin{itemize}
+    \item Overture places with confident, wrong categories:
+      \begin{itemize}
+        \item Oportun ($\approx$20 sites): pharmacy; a lender (confidence 0.92--0.99)
+        \item Evernote: gas station; Biocardia: pharmacy
+        \item Hills Bros.\ Coffee Plant: coffee shop; a historic building
+        \item Gano Excel (Fairfield): coffee shop; a coffee company's business-park unit
+      \end{itemize}
+    \item The route does stop where the data says a pharmacy is: geometric checks pass
+    \item Mitigation: a small, visible deny list in code; better: report upstream
+    \item Geocoding ranks names, not meaning: ``Oakland airport'' $\to$ Oakland Airport Executive Hotel, until the OSM tag had to match the named kind
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Engines: silent failures}
+  \begin{itemize}
+    \item Valhalla matrices: $\approx$2\% of places null in their entire row and column (8 of 400 shops); all snapped to a parking aisle or service road; \api{/route} reaches them. Fix: re-snap those points to the street
+    \item Default \api{max\_exclude\_polygons\_length}: 10 km total perimeter; over it the request is rejected, and the easy fallback silently drops the constraint
+    \item Ollama: tool-call arguments must be objects, not JSON strings; every turn after a tool call failed
+    \item Ollama: two context sizes (8k, 16k) load two copies of a 35B model; on a 12 GB GPU the second load crashed
+  \end{itemize}
+\end{frame}
+
+\begin{frame}{Impossible requests: say no, with the number}
+  \begin{columns}[T]
+    \begin{column}{0.38\textwidth}
+      \begin{itemize}
+        \item ``Home by five'' at 4:55 with three errands: OR-Tools relaxes the deadline; the verifier fails it: arrive 5:05
+        \item ``A car wash under one minute out of the way'': the closest adds 3.2 min
+        \item Never a plausible route that quietly violates the request
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.6\textwidth}
+      \shot{breaks-deadline.png}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+\begin{frame}{What constraints cannot express yet}
+  \begin{itemize}
+    \item ``Downtown'': no usable boundary in OSM; a gazetteer circle
+    \item ``The Bay Bridge'': the name is in \texttt{bridge:name}, absent from the routing graph; matched by footprint for a short list
+    \item ``Before it closes'': no opening hours in the open places data; the driver must state the time
+    \item ``A Safeway'': resolution picks one; alternatives are shown, not asked
+    \item A verifier that shares the planner's definitions shares its mistakes: checks need independent data, not only independent code
+  \end{itemize}
+\end{frame}
+
+% ------------------------------------------------------------------------------------------------
+\section{Conclusion}
+
+\begin{frame}{Summary}
+  \begin{enumerate}
+    \item Give the language model one job: fill a typed schema. Open engines do the geometry and the optimization.
+    \item Constraints are predicates over graph edges, not road names; iterate until the route satisfies them.
+    \item Verify the final route from fresh data, and report failures with the measured value.
+  \end{enumerate}
+\end{frame}
+
+\begin{frame}{Thank you}
+  \begin{itemize}
+    \item Code: github.com/johngcarlsson-usc/TurnByTurn
+    \item Built on Valhalla, OpenStreetMap, Overture Maps, DuckDB, OR-Tools, Photon, Nominatim, Caltrans PeMS, Ferrostar, MapLibre, OpenFreeMap, Open-Meteo, Ollama
+  \end{itemize}
+\end{frame}
+
+\end{document}

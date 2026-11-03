@@ -1,0 +1,16 @@
+<section id="demo-send" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1C6FD1;letter-spacing:1px">DEMO 5 · SENDING HER PART</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">“Send to Wife”: a link, not an account</h2>
+</div>
+<div style="display:flex;gap:96px;flex:1;align-items:flex-start">
+<div style="flex:1;display:flex;flex-direction:column;gap:28px">
+<p style="font-size:32px;line-height:1.45">One unguessable token, 30 minutes. Her phone opens a plain web page with her part of the plan.</p>
+<p style="font-size:32px;line-height:1.45;color:#3B4660">“Start turn-by-turn” runs Ferrostar’s core (Rust → WASM) in her browser, on the plan’s exact route, exclusions included.</p>
+<p style="font-size:32px;line-height:1.45;color:#3B4660">She can share her location back for the next plan. When the token expires, it’s deleted and the link returns 410.</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#1C6FD1">POST /api/share · /api/trip/active · /api/gps</p>
+</div>
+<img src="/_blob/02728d82d1f5a839f9fd8aeae871c10a" alt="Phone: Your part, 1 stop, done 3:34pm, Whole Foods Market (groceries), Start turn-by-turn button" style="width:316px;height:684px;object-fit:contain;border-radius:28px;border:1px solid #D9D4C7">
+</div>
+<aside>Then “Send to Wife.” No accounts, no app on her side, just a link. It carries an unguessable token that lasts thirty minutes. Her phone opens a plain web page showing her part: one stop, Whole Foods, done by 3:34. “Start turn-by-turn” runs Ferrostar’s navigation core, compiled from Rust to WebAssembly, in her browser on her phone’s own GPS, and it uses the plan’s exact route request, so a reroute keeps every exclusion the planner found. The same page can share her location back, so the next plan can start from where she really is. When the token expires, her position is deleted and the link answers 410 Gone. Limits: a browser shares location only while the page is open, and Google Maps location sharing can’t be read at all; there’s no API for it.</aside>
+</section>

@@ -1,0 +1,19 @@
+{
+  "v": 4,
+  "createdOnFiles": {"v": 1, "at": "2026-10-29T17:35:00Z"},
+  "lists": "css",
+  "title": "Natural-Language Routing on an Open Stack",
+  "order": ["cover", "toggles", "pattern", "stack", "model-job", "five-requests", "demo-gas", "demo-coffee", "code-detour", "demo-880", "code-exclude", "demo-errands", "code-gtsp", "demo-team", "code-team", "demo-send", "verify", "breaks", "data-quality", "engine", "honest-no", "limits", "takeaways", "thanks"],
+  "sections": {
+    "s1": {"description": "Why toggles aren’t enough, and the pattern: language becomes constraints, constraints become geometry.", "start": "cover"},
+    "s2": {"description": "Five live requests from a phone at the Great Mall, Milpitas, each exercising a different open tool.", "start": "five-requests"},
+    "s3": {"description": "Every route is checked independently of the planner.", "start": "verify"},
+    "s4": {"description": "Where it breaks: data, engines, language, and the limits of constraints.", "start": "breaks"},
+    "s5": {"description": "Takeaways and thanks.", "start": "takeaways"}
+  },
+  "faces": {
+    "ibm-plex-sans": {"family": "IBM Plex Sans", "href": "https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@400;500;600;700&display=swap"},
+    "jetbrains-mono": {"family": "JetBrains Mono", "href": "https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap"}
+  },
+  "designSystems": []
+}

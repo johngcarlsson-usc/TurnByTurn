@@ -1,0 +1,16 @@
+<section id="limits" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#C2410C;letter-spacing:1px">BREAKS · LANGUAGE AND LIMITS</p>
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">What constraints can’t express yet</h2>
+</div>
+<table style="font-size:32px;color:#14213D">
+<tr><th style="width:30%;text-align:left">Request</th><th style="width:70%;text-align:left">What’s missing</th></tr>
+<tr><td>“downtown”</td><td>A boundary. Today it’s a hand-drawn circle in a gazetteer.</td></tr>
+<tr><td>“the Bay Bridge”</td><td>The name. Matched by footprint for a short list of bridges.</td></tr>
+<tr><td>“before it closes”</td><td>Opening hours. Not in the open places data; the driver must say the time.</td></tr>
+<tr><td>“Oakland airport”</td><td>Ranking. The geocoder put a hotel first; a named kind must now match the OSM tag.</td></tr>
+<tr><td>“a Safeway”</td><td>Disambiguation. Resolution picks one; alternatives are shown, not asked.</td></tr>
+</table>
+<p style="font-size:32px;line-height:1.45;color:#3B4660">And a verifier that shares the planner’s definitions shares its mistakes.</p>
+<aside>Ambiguous language is the long tail. “Downtown” has no boundary in OpenStreetMap that a router can use, so it’s a circle I drew. Named roads lose their names in routing graphs. Overture has no opening hours, so “before it closes” only works if you say when. Geocoders rank names, not meaning: “Oakland airport” matched the Oakland Airport Executive Hotel until the kind of place had to match the OpenStreetMap tag. And the deepest one: my Bay Bridge bug passed the verifier because both used the same wrong definition. Checks must come from independent data, not just independent code.</aside>
+</section>

@@ -1,0 +1,19 @@
+<section id="engine" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#C2410C;letter-spacing:1px">BREAKS · ENGINES</p>
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">Silent failures inside the engine</h2>
+</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:40px">
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFFFF;border:2px solid #D9D4C7;padding:44px;border-radius:20px">
+<p style="font-size:96px;font-weight:700;line-height:1;color:#1C6FD1">2%</p>
+<h3 style="font-size:36px;font-weight:600">of places vanish from Valhalla matrices</h3>
+<p style="font-size:30px;line-height:1.45;color:#3B4660">8 of 400 random shops: null in their whole matrix row and column. All snapped to a parking aisle or service road. /route reaches every one. Fix: re-snap just those points to the street.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:20px;background:#FFFFFF;border:2px solid #D9D4C7;padding:44px;border-radius:20px">
+<p style="font-size:96px;font-weight:700;line-height:1;color:#1C6FD1">10 km</p>
+<h3 style="font-size:36px;font-weight:600">default cap on exclusion polygons</h3>
+<p style="font-size:30px;line-height:1.45;color:#3B4660">Total perimeter, all polygons combined. Over it, Valhalla rejects the request, and the easy fallback is to retry without the storm. Raise <span style="font-family:'JetBrains Mono', 'Courier New', monospace">max_exclude_polygons_length</span>.</p>
+</div>
+</div>
+<aside>Two engine-level gotchas. First, Valhalla’s matrix algorithm silently returns null for about two percent of real places: in a 62-by-62 errand matrix, one Whole Foods produced 122 nulls, its entire row and column. It snapped onto a 23-meter parking aisle that isn’t a dead end and has no access restriction; a normal route reaches it fine. Treat null as unreachable and that store silently disappears from the candidate set. Snapping just those points to the nearest street fixed all eight in my sample. Second, the default service limit on exclusion polygons is ten kilometers of total perimeter, so a couple of storm cells blows through it.</aside>
+</section>

@@ -1,0 +1,94 @@
+apply plugin: 'com.android.application'
+apply plugin: 'org.jetbrains.kotlin.android'
+apply plugin: 'org.jetbrains.kotlin.plugin.compose'
+
+android {
+    namespace = "io.turnbyturn.navigation"
+    compileSdk = rootProject.ext.compileSdkVersion
+    defaultConfig {
+        applicationId "io.turnbyturn.navigation"
+        minSdkVersion rootProject.ext.minSdkVersion
+        targetSdkVersion rootProject.ext.targetSdkVersion
+        versionCode 1
+        versionName "1.0"
+        testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+        // The planner backend. Override with -PbackendUrl=... (e.g. a different Tailscale host).
+        buildConfigField "String", "BACKEND_URL",
+            "\"${project.findProperty('backendUrl') ?: 'http://10.0.2.2:5055'}\""
+        // Phones only (Galaxy S25 and friends): skip x86/armv7 native libs, ~3x smaller APK.
+        ndk { abiFilters 'arm64-v8a' }
+        aaptOptions {
+             // Files and dirs to omit from the packaged assets dir, modified to accommodate modern web apps.
+             // Default: https://android.googlesource.com/platform/frameworks/base/+/282e181b58cf72b6ca770dc7ca5f91f135444502/tools/aapt/AaptAssets.cpp#61
+            ignoreAssetsPattern = '!.svn:!.git:!.ds_store:!*.scc:.*:!CVS:!thumbs.db:!picasa.ini:!*~'
+        }
+    }
+    buildFeatures {
+        buildConfig true
+        compose true
+    }
+    compileOptions {
+        // Ferrostar's libraries use java.time and friends via core library desugaring.
+        coreLibraryDesugaringEnabled true
+        sourceCompatibility JavaVersion.VERSION_21
+        targetCompatibility JavaVersion.VERSION_21
+    }
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+kotlin {
+    compilerOptions { jvmTarget = org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21 }
+}
+
+repositories {
+    flatDir{
+        dirs '../capacitor-cordova-android-plugins/src/main/libs', 'libs'
+    }
+}
+
+dependencies {
+    implementation fileTree(include: ['*.jar'], dir: 'libs')
+    implementation "androidx.appcompat:appcompat:$androidxAppCompatVersion"
+    implementation "androidx.coordinatorlayout:coordinatorlayout:$androidxCoordinatorLayoutVersion"
+    implementation "androidx.core:core-splashscreen:$coreSplashScreenVersion"
+    implementation project(':capacitor-android')
+    coreLibraryDesugaring 'com.android.tools:desugar_jdk_libs:2.1.5'
+
+    // Android Auto: Ferrostar navigation core + car-app templates + MapLibre car map surface.
+    def ferrostar = '0.59.0'
+    implementation "com.stadiamaps.ferrostar:core:$ferrostar"
+    implementation "com.stadiamaps.ferrostar:car-app:$ferrostar"
+    implementation "com.stadiamaps.ferrostar:ui-maplibre-car-app:$ferrostar"
+    // Used directly by the car screen (camera state, view config); not exported by the above.
+    implementation "com.stadiamaps.ferrostar:ui-maplibre:$ferrostar"
+    implementation "com.stadiamaps.ferrostar:ui-compose:$ferrostar"
+    implementation 'io.github.rallista:car-app-compose:0.0.2'
+    implementation 'androidx.car.app:app:1.7.0'
+    implementation platform('androidx.compose:compose-bom:2026.02.01')
+    implementation 'androidx.compose.ui:ui'
+    implementation 'androidx.compose.foundation:foundation'
+    implementation 'androidx.lifecycle:lifecycle-runtime-ktx:2.10.0'
+    implementation platform('com.squareup.okhttp3:okhttp-bom:5.3.2')
+    implementation 'com.squareup.okhttp3:okhttp'
+
+    testImplementation "junit:junit:$junitVersion"
+    androidTestImplementation "androidx.test.ext:junit:$androidxJunitVersion"
+    androidTestImplementation "androidx.test.espresso:espresso-core:$androidxEspressoCoreVersion"
+    implementation project(':capacitor-cordova-android-plugins')
+}
+
+apply from: 'capacitor.build.gradle'
+
+try {
+    def servicesJSON = file('google-services.json')
+    if (servicesJSON.text) {
+        apply plugin: 'com.google.gms.google-services'
+    }
+} catch(Exception e) {
+    logger.info("google-services.json not found, google-services plugin not applied. Push Notifications won't work")
+}

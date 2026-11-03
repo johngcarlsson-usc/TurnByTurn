@@ -1,0 +1,16 @@
+<section id="five-requests" data-transition="fade" style="background:#14213D;color:#F7F5F0;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:16px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1;color:#F7F5F0">Five requests from the Great Mall, Milpitas</h2>
+<p style="font-size:32px;line-height:1.4;color:#BFCCE0">The phone’s GPS fix is the start. Nobody says where they are.</p>
+</div>
+<table style="font-size:30px;color:#F7F5F0">
+<tr><th style="width:6%;text-align:left;color:#7FB2F0">#</th><th style="width:50%;text-align:left;color:#7FB2F0">Spoken request</th><th style="width:44%;text-align:left;color:#7FB2F0">What it exercises</th></tr>
+<tr><td>1</td><td>Gas on the right, on the way to Levi’s Stadium</td><td>DuckDB on Overture · arrival-side geometry</td></tr>
+<tr><td>2</td><td>Coffee about an hour into the drive to Sacramento</td><td>Maneuver times · Valhalla matrix</td></tr>
+<tr><td>3</td><td>Oakland airport, but stay off 880</td><td>Map-match → exclude → re-route loop</td></tr>
+<tr><td>4</td><td>Pharmacy before 6, groceries, gas, home by 6:15</td><td>OR-Tools: disjunctions + time windows</td></tr>
+<tr><td>5</td><td>Split the afternoon with my wife</td><td>OR-Tools: two vehicles, pickup and delivery</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.4;color:#BFCCE0">All live: the sentence goes to the model every time. <span style="font-family:'JetBrains Mono', 'Courier New', monospace;color:#7FB2F0">scripts/capture_talk.py</span> regenerates every screenshot.</p>
+<aside>Five requests, all from one spot: the Great Mall in Milpitas, about an hour from this room. The phone sends its GPS fix the way any phone would, and that fix is the start of every trip, so none of these sentences says where I am. Each one exercises a different open tool. And none of this is canned: every screenshot in this section came from the live app, with the sentence going to the model, and the script that took them is in the repo.</aside>
+</section>

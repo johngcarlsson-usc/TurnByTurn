@@ -1,0 +1,18 @@
+<section id="code-detour" data-transition="fade" style="background:#14213D;color:#F7F5F0;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#FFA94D;letter-spacing:1px">UNDER THE HOOD · CANDIDATES AND DETOURS</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1;color:#F7F5F0">Distance prefilters, minutes decide</h2>
+</div>
+<div style="display:flex;gap:56px;flex:1">
+<div style="width:600px;display:flex;flex-direction:column;gap:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#F7F5F0;background:#1F2E52;padding:24px;border-radius:12px">detour(p) = t(o,p) + t(p,d) − t(o,d)</p>
+<p style="font-size:28px;line-height:1.45;color:#BFCCE0">t is Valhalla’s travel time. Two thin matrices, 1×n and n×1, screen n candidates; the 6 best per errand go on.</p>
+<p style="font-size:28px;line-height:1.45;color:#BFCCE0">Gas: 4 stations right of the road. Coffee: 40 cafés in the 50–70 min stretch, 1.3 s of matrices.</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#7FB2F0">nlroute/places.py · planner.py (trimmed)</p>
+</div>
+<div style="flex:1;background:#0B1428;border-radius:16px;padding:36px;display:flex;flex-direction:column">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.45;color:#E6EDF7">SELECT id, name, category, lat, lon, confidence<br>FROM read_parquet('places.parquet')  <span style="color:#7FB2F0">-- Overture, no import</span><br>WHERE lat BETWEEN ? AND ? AND lon BETWEEN ? AND ?<br>  AND category IN ('coffee_shop', 'cafe')<br>  AND coalesce(confidence, 0) &gt;= 0.5<br> <br><span style="color:#7FB2F0"># shapely: distance to the route, position along it</span><br>offset = chunks[tree.nearest(pt)].distance(pt)<br>along = line.project(pt) / line.length<br> <br><span style="color:#7FB2F0"># Valhalla /sources_to_targets</span><br>to_c = matrix([origin], cands)[0][0]  <span style="color:#7FB2F0"># 1 × n</span><br>from_c = [r[0] for r in matrix(cands, [dest])[0]]  <span style="color:#7FB2F0"># n × 1</span><br>detour = [a + b - direct for a, b in zip(to_c, from_c)]</p>
+</div>
+</div>
+<aside>Under the hood of the first two demos. The search is two stages. First a cheap prefilter: DuckDB reads Overture’s GeoParquet file directly, no database, no import, with a bounding box around the route and a category filter; “coffee” maps to two Overture categories, and that table lives in code, not in the model. Shapely then gives each hit its distance to the route line and its position along it, which is what the “about an hour in” window and the right-side check use. Straight-line distance is only a prefilter, because a café 200 meters from a freeway can be ten minutes away. The decision is in minutes: detour equals time from start to the place, plus place to destination, minus the direct trip. Instead of one full n-by-n matrix, two thin ones, start to every candidate and every candidate to the destination, are enough to rank them. The best six per errand go to the next stage. If asked “why not PostGIS?”: nothing here needs a server; a 273k-row parquet file and DuckDB answer in milliseconds on a laptop.</aside>
+</section>

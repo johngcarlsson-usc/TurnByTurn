@@ -1,0 +1,16 @@
+<section id="demo-880" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1C6FD1;letter-spacing:1px">DEMO 3 · EXCLUSION LOOP</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">“Oakland airport, but stay off 880”</h2>
+</div>
+<div style="display:flex;gap:56px;flex:1">
+<div style="width:500px;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:28px;line-height:1.45">“Avoid I-880” is a predicate over edges: map-match the route, exclude every I-880 edge, re-route, repeat until clean.</p>
+<p style="font-size:28px;line-height:1.45;color:#3B4660">680 → 580: 63 min, +20 vs. the plain route (red, dotted).</p>
+<p style="font-size:28px;line-height:1.45;color:#3B4660">First run went to the Oakland Airport Executive Hotel. Now a named kind (“airport”) must match the OSM tag.</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#1C6FD1">/trace_attributes · exclude_locations</p>
+</div>
+<img src="/_blob/cf0c2df4afea77125f24cce2da56e16c" alt="App: Great Mall to Oakland International Airport via I-680 and I-580, with the plain I-880 route dotted in red" style="width:1108px;height:623px;object-fit:contain;border-radius:16px;border:1px solid #D9D4C7">
+</div>
+<aside>“Get me to Oakland airport, but stay off 880.” Avoiding a road isn’t a toggle; it’s a predicate over graph edges. The loop: route, map-match the line back onto edges with trace_attributes, find every edge that violates the rule, add those to exclude_locations, route again, until a pass comes back clean. Here it goes up 680 and over 580: 63 minutes, twenty more than the plain route along 880, shown dotted in red so you can see the cost of the request. A confession: the first time I ran this, “Oakland airport” resolved to the Oakland Airport Executive Hotel, because Photon ranks a name match above the airport. Now, when a request names a kind of place, airport, school, hospital, a hit whose OpenStreetMap tag actually is that kind comes first. The same bug was sending “San Jose airport” to the San Jose Airport Inn.</aside>
+</section>

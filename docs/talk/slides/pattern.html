@@ -1,0 +1,24 @@
+<section id="pattern" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:72px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">One pattern, every request</h2>
+<div style="display:flex;align-items:stretch;gap:24px">
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;border:2px solid #D9D4C7;padding:40px;border-radius:20px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1C6FD1">1 · LANGUAGE</p>
+<p style="font-size:34px;line-height:1.35">“…skip the freeway through downtown”</p>
+<p style="font-size:26px;color:#5A6478;line-height:1.4">Spoken, messy, one breath</p>
+</div>
+<x-shape kind="arrow-right" style="width:72px;height:40px;background:#E8590C;align-self:center"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;border:2px solid #D9D4C7;padding:40px;border-radius:20px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1C6FD1">2 · CONSTRAINTS</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:28px;line-height:1.4">avoid.areas:<br>  text: downtown SF<br>  roads: freeways</p>
+<p style="font-size:26px;color:#5A6478;line-height:1.4">A typed schema the model fills in</p>
+</div>
+<x-shape kind="arrow-right" style="width:72px;height:40px;background:#E8590C;align-self:center"></x-shape>
+<div style="flex:1;display:flex;flex-direction:column;gap:16px;background:#FFFFFF;border:2px solid #D9D4C7;padding:40px;border-radius:20px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1C6FD1">3 · GEOMETRY</p>
+<p style="font-size:34px;line-height:1.35">1.1 mi circle → motorway edges inside it → exclude_locations</p>
+<p style="font-size:26px;color:#5A6478;line-height:1.4">Deterministic code, open engines</p>
+</div>
+</div>
+<p style="font-size:40px;line-height:1.35;color:#14213D">The model never routes, never searches, never optimizes. <span style="color:#1C6FD1">It fills in a form.</span></p>
+<aside>This is the whole talk in one slide. The language model has exactly one job: turn the sentence into a typed constraint object. Everything after that is deterministic code calling open engines. That split is what makes every decision inspectable on screen, and, as we’ll see, checkable after the fact.</aside>
+</section>

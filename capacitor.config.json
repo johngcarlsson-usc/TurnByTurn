@@ -1,0 +1,8 @@
+{
+  "appId": "io.turnbyturn.navigation",
+  "appName": "Exagion",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}

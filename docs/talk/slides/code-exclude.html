@@ -1,0 +1,18 @@
+<section id="code-exclude" data-transition="fade" style="background:#14213D;color:#F7F5F0;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:40px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#FFA94D;letter-spacing:1px">UNDER THE HOOD · AVOIDANCE AS A LOOP</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1;color:#F7F5F0">Avoidance is a loop, not a toggle</h2>
+</div>
+<div style="display:flex;gap:56px;flex:1">
+<div style="width:600px;display:flex;flex-direction:column;gap:24px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#F7F5F0;background:#1F2E52;padding:24px;border-radius:12px">X[0] = ∅<br>r[k] = route(o, d; avoid X[k])<br>B[k] = {e ∈ edges(r[k]) : rule(e)}<br>X[k+1] = X[k] ∪ midpoints(B[k])<br>stop when B[k] = ∅</p>
+<p style="font-size:28px;line-height:1.45;color:#BFCCE0">Valhalla avoids points, not predicates. So the rule runs on map-matched edges, and the violators’ midpoints become exclude_locations. X only grows; at most 8 rounds.</p>
+<p style="font-size:28px;line-height:1.45;color:#BFCCE0">This run: pass 1, 43.5 min, 122 I-880 edges. Pass 2, 63.1 min, clean. 121 ms.</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;color:#7FB2F0">nlroute/planner.py · rules.py (trimmed)</p>
+</div>
+<div style="flex:1;background:#0B1428;border-radius:16px;padding:36px;display:flex;flex-direction:column">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.45;color:#E6EDF7">for attempt in range(MAX_EXCLUSION_ROUNDS):  <span style="color:#7FB2F0"># 8</span><br>    trip = valhalla.route(points, costing, options,<br>                          exclude_locations, exclude_polygons)<br>    edges = valhalla.edges_for_route(trip, costing)  <span style="color:#7FB2F0"># map-match</span><br>    bad = [e for e in edges<br>           if any(rule.violates(e) for rule in rules)]<br>    if not bad:<br>        break  <span style="color:#7FB2F0"># clean</span><br>    new = [midpoint(e) for e in bad<br>           if midpoint(e) not in exclude_locations]<br>    if not new:<br>        break  <span style="color:#7FB2F0"># stuck: the verifier will say so</span><br>    exclude_locations.extend(new)</p>
+</div>
+</div>
+<aside>Under the hood of the 880 demo. Mathematically it’s a fixpoint iteration on the set of excluded points. Valhalla can’t take a rule like “no edge named I-880”; it takes points to avoid, and it avoids the graph edges those points snap to. So: route; map-match the resulting line back onto edges with trace_attributes, which gives every edge’s names, road class and shape; test each edge against the rule; add the midpoint of every violating edge to the excluded set; route again. The set only grows, so it can’t cycle, and it’s capped at eight rounds. One pass is rarely enough in general: block one freeway and the router finds the next one, which is why “skip the downtown freeway” took three passes in San Francisco. Here two were enough: the first route was 43.5 minutes with 122 edges on I-880, also named the Nimitz Freeway; the second, 63.1 minutes, clean. Both routing passes together took 121 milliseconds. If the loop gets stuck, it stops, and the independent verifier reports the violation instead of hiding it. The rule itself is a small class: a name match on the edge’s names, optionally limited to an area polygon.</aside>
+</section>

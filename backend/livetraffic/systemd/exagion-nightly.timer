@@ -1,0 +1,10 @@
+[Unit]
+Description=Exagion nightly scoring at 3 PM, retried at 9 PM (PeMS posts the previous day during the day)
+
+[Timer]
+OnCalendar=*-*-* 15:00
+OnCalendar=*-*-* 21:00
+Persistent=true
+
+[Install]
+WantedBy=timers.target

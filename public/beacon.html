@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>GPS Beacon</title>
+<style>
+  :root { --bg: #f7f5f0; --ink: #14213d; --muted: #5a6478; --ok: #2f9e44; --bad: #e03131; --accent: #1c7ed6; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 20px 16px; background: var(--bg); color: var(--ink);
+    font: 17px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  p { margin: 0 0 16px; color: var(--muted); }
+  button { width: 100%; padding: 18px; font-size: 20px; font-weight: 600; border: 0; border-radius: 14px;
+    background: var(--accent); color: #fff; }
+  button.stop { background: var(--bad); }
+  .status { margin: 18px 0; padding: 16px; border-radius: 14px; background: #fff; }
+  .row { display: flex; justify-content: space-between; padding: 4px 0; }
+  .row b { font-variant-numeric: tabular-nums; }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #adb5bd; margin-right: 8px; }
+  .dot.live { background: var(--ok); }
+  .dot.error { background: var(--bad); }
+  .err { color: var(--bad); }
+</style>
+</head>
+<body>
+<h1>GPS Beacon</h1>
+<p>Streams this phone’s location to the Exagion laptop. Keep this page open and the screen on while driving.</p>
+<button id="toggle">Start sharing location</button>
+<div class="status">
+  <div class="row"><span><span id="dot" class="dot"></span><span id="state">Not sharing</span></span><b id="sent">0 sent</b></div>
+  <div class="row"><span>Position</span><b id="pos">–</b></div>
+  <div class="row"><span>Accuracy</span><b id="acc">–</b></div>
+  <div class="row"><span>Speed</span><b id="spd">–</b></div>
+  <div class="row"><span>Heading</span><b id="hdg">–</b></div>
+  <div id="error" class="err"></div>
+</div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  let watchId = null;
+  let wakeLock = null;
+  let sent = 0;
+  let inFlight = false;
+  let pending = null;
+
+  const setState = (text, cls) => { $('state').textContent = text; $('dot').className = `dot ${cls || ''}`; };
+
+  // One request at a time; if fixes arrive faster than the network, send the newest.
+  const post = async (fix) => {
+    if (inFlight) { pending = fix; return; }
+    inFlight = true;
+    try {
+      const r = await fetch('/api/gps', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fix) });
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      sent += 1;
+      $('sent').textContent = `${sent} sent`;
+      $('error').textContent = '';
+      setState('Sharing', 'live');
+    } catch (e) {
+      $('error').textContent = `Can’t reach the laptop: ${e.message}`;
+      setState('Laptop unreachable', 'error');
+    } finally {
+      inFlight = false;
+      if (pending) { const next = pending; pending = null; post(next); }
+    }
+  };
+
+  const onFix = (p) => {
+    const c = p.coords;
+    $('pos').textContent = `${c.latitude.toFixed(5)}, ${c.longitude.toFixed(5)}`;
+    $('acc').textContent = `${Math.round(c.accuracy)} m`;
+    $('spd').textContent = c.speed == null || Number.isNaN(c.speed) ? '–' : `${Math.round(c.speed * 2.23694)} mph`;
+    $('hdg').textContent = c.heading == null || Number.isNaN(c.heading) ? '–' : `${Math.round(c.heading)}°`;
+    post({ lat: c.latitude, lng: c.longitude, accuracy: c.accuracy, heading: c.heading, speed: c.speed, timestamp: p.timestamp });
+  };
+
+  const onError = (e) => {
+    const hint = e.code === 1 ? ' Allow location for this site in your browser settings.' : '';
+    $('error').textContent = `Location error: ${e.message}.${hint}`;
+    setState('No location', 'error');
+  };
+
+  const keepAwake = async () => {
+    try { wakeLock = await navigator.wakeLock?.request('screen'); } catch (_) { /* not supported: keep the screen on manually */ }
+  };
+  document.addEventListener('visibilitychange', () => { if (watchId !== null && document.visibilityState === 'visible') keepAwake(); });
+
+  $('toggle').onclick = () => {
+    if (watchId === null) {
+      if (!window.isSecureContext) { $('error').textContent = 'This page must be opened over https:// to use GPS.'; return; }
+      watchId = navigator.geolocation.watchPosition(onFix, onError, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
+      keepAwake();
+      setState('Waiting for GPS…');
+      $('toggle').textContent = 'Stop sharing';
+      $('toggle').className = 'stop';
+    } else {
+      navigator.geolocation.clearWatch(watchId);
+      watchId = null;
+      wakeLock?.release?.();
+      setState('Not sharing');
+      $('toggle').textContent = 'Start sharing location';
+      $('toggle').className = '';
+    }
+  };
+</script>
+</body>
+</html>

@@ -1,0 +1,17 @@
+[Unit]
+Description=Exagion exagion-photon
+After=network-online.target
+
+[Service]
+# per-machine settings, optional (README: "Running it unattended")
+EnvironmentFile=-%h/.config/exagion.env
+WorkingDirectory=%h/geo/photon
+
+ExecStart=/usr/bin/bash -c 'exec $HOME/.local/opt/jdk-21/bin/java -Xmx8g -jar photon-1.3.0.jar serve -data-dir $HOME/geo/photon -listen-ip 127.0.0.1 -listen-port 2322 >> $HOME/geo/photon/serve.log 2>&1'
+Restart=always
+# below interactive work and other services on a shared machine
+Nice=10
+RestartSec=30
+
+[Install]
+WantedBy=default.target

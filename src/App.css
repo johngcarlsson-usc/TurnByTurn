@@ -1,0 +1,13 @@
+.turn-by-turn-app {
+  width: 100vw;
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+  background: #eef3f9;
+}
+
+.share-error {
+  position: fixed; top: 12px; left: 50%; transform: translateX(-50%); z-index: 50;
+  padding: 10px 16px; border-radius: 10px; background: #fff5f5; color: #c92a2a;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15); font-size: 14px;
+}

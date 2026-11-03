@@ -1,0 +1,356 @@
+.planner {
+  position: fixed;
+  inset: 0;
+  background: #f1f3f5;
+}
+
+.planner-map {
+  position: absolute;
+  inset: 0;
+}
+
+.planner-panel {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  bottom: 12px;
+  width: 440px;
+  display: flex;
+  flex-direction: column;
+  padding: 14px 14px 8px;
+  background: #fff;
+  border-radius: 14px;
+  box-shadow: 0 2px 6px rgb(0 0 0 / 15%), 0 8px 24px rgb(0 0 0 / 10%);
+  z-index: 2;
+}
+
+.query-box {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 6px 6px 6px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 22px;
+  background: #f8f9fa;
+  flex-shrink: 0;
+}
+
+.chat-thread {
+  margin-top: 10px;
+  overflow-y: auto;
+  min-height: 0;
+  max-height: 30vh;
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  overscroll-behavior: contain;
+}
+
+.chat-thread:not(:empty) {
+  padding: 4px 2px 10px;
+  min-height: 72px;
+}
+
+.chat-message {
+  flex-shrink: 0;
+  max-width: 92%;
+  padding: 8px 12px;
+  border-radius: 14px;
+  background: #f1f3f5;
+  overflow-wrap: anywhere;
+}
+
+.chat-message-user {
+  align-self: flex-end;
+  background: #e7f5ff;
+}
+
+.where-to {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 6px 4px 12px;
+  border: 1px solid #dee2e6;
+  border-radius: 24px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgb(0 0 0 / 8%);
+}
+
+.suggestions {
+  margin-top: 6px;
+  border: 1px solid #e9ecef;
+  border-radius: 12px;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+
+.suggestion {
+  display: block;
+  width: 100%;
+  padding: 8px 12px;
+  border-bottom: 1px solid #f1f3f5;
+}
+
+.suggestion:last-child {
+  border-bottom: none;
+}
+
+.suggestion:active {
+  background: #f1f3f5;
+}
+
+.gps-dot {
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: #1c7ed6;
+  border: 3px solid #fff;
+  box-shadow: 0 0 0 6px rgb(28 126 214 / 25%), 0 1px 4px rgb(0 0 0 / 40%);
+}
+
+.stop-editor {
+  padding: 8px;
+  border: 1px solid #e9ecef;
+  border-radius: 10px;
+  background: #fbfbfa;
+}
+
+.query-box .mantine-Textarea-root {
+  flex: 1;
+}
+
+.results {
+  flex: 1;
+  margin-top: 10px;
+  min-height: 0;
+}
+
+.section {
+  padding: 10px 2px;
+  border-top: 1px solid #f1f3f5;
+}
+
+.section-toggle {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+}
+
+.summary {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.summary .mantine-Badge-root {
+  flex: none;
+}
+
+.big-time {
+  font-size: 28px;
+  font-weight: 700;
+  line-height: 1.1;
+  color: #1c7ed6;
+}
+
+.clarification {
+  display: flex;
+  gap: 8px;
+  align-items: flex-start;
+  color: #c2410c;
+}
+
+.ir-chips {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.ir-chip {
+  font-size: 12px;
+  padding: 3px 8px;
+  border-radius: 12px;
+  background: #e7f5ff;
+  color: #1864ab;
+}
+
+.ir-chip b {
+  font-weight: 600;
+  color: #0b3d91;
+  margin-right: 2px;
+}
+
+.check {
+  display: grid;
+  grid-template-columns: 16px 1fr auto;
+  gap: 6px;
+  align-items: center;
+  font-size: 13px;
+  padding: 2px 0;
+}
+
+.check.pass svg { color: #2f9e44; }
+.check.fail { color: #c92a2a; }
+
+.check-detail {
+  font-size: 12px;
+  color: #868e96;
+  text-align: right;
+}
+
+.stop-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  padding: 3px 0;
+}
+
+.dot, .pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 700;
+  color: #fff;
+}
+
+.dot-a, .pin-origin { background: #2f9e44; }
+.dot-b, .pin-dest { background: #e03131; }
+.dot-stop, .pin-stop { background: #5f3dc4; }
+.dot-friend, .pin-friend { background: #ae3ec9; }
+
+.meet-grid {
+  display: grid;
+  grid-template-columns: 22px 1fr;
+  gap: 6px 8px;
+  align-items: center;
+}
+
+.pin {
+  width: 28px;
+  height: 28px;
+  font-size: 13px;
+  border: 2px solid #fff;
+  box-shadow: 0 1px 4px rgb(0 0 0 / 35%);
+  cursor: default;
+}
+
+.trace {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px 0 4px 4px;
+}
+
+.trace-step {
+  display: grid;
+  grid-template-columns: 16px 1fr;
+  gap: 6px;
+  align-items: start;
+}
+
+.trace-step svg {
+  margin-top: 2px;
+  color: #495057;
+}
+
+.direction {
+  display: flex;
+  justify-content: space-between;
+  gap: 8px;
+  padding: 4px 0;
+  border-bottom: 1px solid #f8f9fa;
+}
+
+.phase-banner {
+  position: absolute;
+  top: 16px;
+  left: 50%;
+  transform: translateX(calc(-50% + 230px));
+  padding: 8px 16px;
+  border-radius: 20px;
+  background: rgb(33 37 41 / 85%);
+  color: #fff;
+  font-size: 14px;
+  z-index: 3;
+  white-space: nowrap;
+}
+
+/* Bottom-sheet handle: phones only. */
+.sheet-handle {
+  display: none;
+}
+
+@media (width <= 760px) {
+  .sheet-handle {
+    display: block;
+    width: 44px;
+    height: 5px;
+    margin: -6px auto 10px;
+    border-radius: 3px;
+    background: #c9ccd1;
+    cursor: pointer;
+    /* a taller invisible hit area than the bar itself */
+    box-shadow: 0 0 0 10px transparent;
+    flex-shrink: 0;
+  }
+
+  .planner-panel.collapsed > :not(.sheet-handle, .panel-header) {
+    display: none;
+  }
+
+  .planner-panel.collapsed .panel-header {
+    margin-bottom: 0;
+  }
+
+  /* Typing a destination: pin the panel to the top, above the keyboard, and
+     show only the search box and its suggestions. Height doesn't depend on
+     the viewport, so the keyboard opening can't make it bounce. */
+  .planner-panel.searching {
+    top: 8px;
+    bottom: auto;
+    max-height: none;
+  }
+
+  .planner-panel.searching > :not(.panel-header, .where-to, .suggestions) {
+    display: none;
+  }
+
+  .planner-panel {
+    top: auto;
+    left: 8px;
+    right: 8px;
+    bottom: 8px;
+    width: auto;
+    max-height: 55vh;
+  }
+
+  .phase-banner {
+    transform: translateX(-50%);
+    font-size: 12px;
+  }
+}
+
+/* Two-driver plans: the partner's pins, stops and live dot share the friend-route colour. */
+.dot-stop-partner, .pin-stop.pin-stop-partner { background: #ae3ec9; }
+.gps-dot.gps-dot-partner {
+  background: #ae3ec9;
+  box-shadow: 0 0 0 6px rgb(174 62 201 / 25%), 0 1px 4px rgb(0 0 0 / 40%);
+}
+.team-person { padding: 8px 0 4px; border-top: 1px solid rgb(0 0 0 / 6%); }
+.team .summary { margin-bottom: 4px; }
+
+/* Model-written route code under "Show your work". */
+.custom-code {
+  margin: 4px 0 0; padding: 8px; max-height: 260px; overflow: auto;
+  font: 11px/1.4 ui-monospace, SFMono-Regular, Menlo, monospace;
+  background: #f4f6f8; border-radius: 6px; white-space: pre-wrap; overflow-wrap: anywhere; max-width: 100%; box-sizing: border-box;
+}

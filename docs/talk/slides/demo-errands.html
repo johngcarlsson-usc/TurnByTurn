@@ -1,0 +1,16 @@
+<section id="demo-errands" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1C6FD1;letter-spacing:1px">DEMO 4 · OR-TOOLS: GENERALIZED TSP</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">“Three errands, any order, home by 6:15”</h2>
+</div>
+<div style="display:flex;gap:56px;flex:1">
+<div style="width:500px;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:28px;line-height:1.45">Six candidates per errand, shortlisted by detour; one Valhalla matrix over all of them.</p>
+<p style="font-size:28px;line-height:1.45;color:#3B4660">One disjunction per errand group: visit exactly one pharmacy, one grocery, one station. Closing time and deadline are time windows.</p>
+<p style="font-size:28px;line-height:1.45;color:#3B4660">Walgreens 5:23 (closes 6), home 5:25 (by 6:15).</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#1C6FD1">AddDisjunction(group, penalty, 1) · CumulVar.SetMax</p>
+</div>
+<img src="/_blob/d405adc6ce6dcc9c8b7d39e26ad5efcf" alt="App: three numbered errand stops near Calaveras Boulevard in Milpitas, then home; all checks pass" style="width:1108px;height:623px;object-fit:contain;border-radius:16px;border:1px solid #D9D4C7">
+</div>
+<aside>“I need a pharmacy before it closes at six, groceries, and gas, in any order, and I have to be home by 6:15.” No “leaving work now”: the phone knows where I am. “A pharmacy” has hundreds of answers, so choosing one is optimization, not language. The planner screens candidates by real detour with two thin matrices, keeps six per errand, builds one Valhalla matrix over all of them, and hands OR-Tools a generalized traveling-salesman problem. Each errand is a group with one disjunction, maximum cardinality one, so the solver visits exactly one pharmacy, one grocery, one station, in whatever order is fastest. The 6 pm close and the 6:15 deadline are limits on the time dimension’s cumulative variables. The verifier then reads the clock off the final route: pharmacy at 5:23, home at 5:25. Ordered requests, “first coffee, then…”, need no solver at all: a shortest path through layers is exact.</aside>
+</section>

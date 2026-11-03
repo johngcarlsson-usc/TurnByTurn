@@ -1,0 +1,13 @@
+flask
+flask-cors
+requests
+duckdb
+shapely
+ortools
+polyline
+pillow
+osmium
+mapbox-vector-tile
+numpy
+gtfs-realtime-bindings
+lightgbm

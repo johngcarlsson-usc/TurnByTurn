@@ -1,0 +1,16 @@
+<section id="demo-coffee" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1C6FD1;letter-spacing:1px">DEMO 2 · TIME, NOT DISTANCE</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">“Coffee about an hour from now”</h2>
+</div>
+<div style="display:flex;gap:56px;flex:1">
+<div style="width:500px;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:28px;line-height:1.45">The model writes <span style="font-family:'JetBrains Mono', 'Courier New', monospace">afterMinutes: 60</span>. Code finds the stretch you’ll drive 54–66 min in, from each maneuver’s time.</p>
+<p style="font-size:28px;line-height:1.45;color:#3B4660">No café there (the Benicia bridge), so it widens to ±12 min and says so. Then the smallest detour wins.</p>
+<p style="font-size:28px;line-height:1.45;color:#3B4660">Peet’s, Pleasant Hill: +0.3 min, reached 50 min in, checked.</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#1C6FD1">maneuvers[].time · /sources_to_targets</p>
+</div>
+<img src="/_blob/d9fe113902c8d2786e4330adb9aec7be" alt="App: Great Mall to the Sheraton in downtown Sacramento with a Peet's stop in Pleasant Hill and a note that the search widened" style="width:1108px;height:623px;object-fit:contain;border-radius:16px;border:1px solid #D9D4C7">
+</div>
+<aside>“I’m driving to the Sheraton in downtown Sacramento, and I’m going to want coffee about an hour from now.” That’s this conference’s hotel. “An hour from now” is a time, not a place, so the model writes afterMinutes: 60, and code turns it into geometry: Valhalla’s maneuver times say which stretch of road you’ll be on between 54 and 66 minutes in. That stretch is the Benicia bridge and the freeway around it, with no café within two kilometers, so the search widens to plus or minus twelve minutes and says so on screen instead of quietly loosening. Then a Valhalla matrix gives every candidate’s real detour, and the smallest wins: a Peet’s in Pleasant Hill, a third of a minute off the route. The verifier checks the stop is actually reached inside the window it searched. An earlier run picked “Gano Excel” in Fairfield, tagged as a coffee shop; more on that later.</aside>
+</section>

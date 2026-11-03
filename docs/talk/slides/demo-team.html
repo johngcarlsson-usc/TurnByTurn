@@ -1,0 +1,16 @@
+<section id="demo-team" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1C6FD1;letter-spacing:1px">DEMO 5 · OR-TOOLS: TWO VEHICLES</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">“Between the two of us… who does what?”</h2>
+</div>
+<div style="display:flex;gap:56px;flex:1">
+<div style="width:500px;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:28px;line-height:1.45">Two vehicles, open-ended routes. Pickup and drop paired: same car, pickup first. 3:30 is a time window; the grocery run is 30 min because the request said so.</p>
+<p style="font-size:28px;line-height:1.45;color:#3B4660">You: CVS, Stratford, home 3:15. Wife: Whole Foods, Fremont.</p>
+<p style="font-size:28px;line-height:1.45;color:#3B4660">Done 3:34. Either alone: 3:51 or 4:11.</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#1C6FD1">AddPickupAndDelivery · VehicleVar(p) == VehicleVar(d)</p>
+</div>
+<img src="/_blob/0c5c91bc9f38ee16fb573e5a067e8a93" alt="App: two routes, you from the Great Mall via CVS and Stratford School to home, your wife from Fremont BART to Whole Foods; done 3:34pm vs you alone 3:51pm" style="width:1108px;height:623px;object-fit:contain;border-radius:16px;border:1px solid #D9D4C7">
+</div>
+<aside>“My wife is at the Fremont BART station. Between the two of us, someone has to pick up our daughter at Stratford School and get her home by 3:30, someone has to do the grocery shopping, which takes about half an hour, and someone has to stop at a CVS. Who should do what?” This is a small vehicle-routing problem. Two vehicles, each starting where that person is, each done after their last stop. The school pickup and the drop at home are a pickup-and-delivery pair: same vehicle, pickup first, and 3:30 is a window on the drop. Groceries and CVS are disjunctions over candidates near either of us. Stop times are only what was said: thirty minutes for groceries because it was in the sentence, zero otherwise. Result: I do CVS and the school run and we’re home at 3:15; she does Whole Foods near BART. Both done by 3:34. Either of us alone finishes 3:51 or 4:11 and misses 3:30. One fix this needed: the chat agent first answered “who should do what” itself, in prose. It was plausible and unverified. Now that question always goes to the solver.</aside>
+</section>

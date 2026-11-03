@@ -1,0 +1,16 @@
+<section id="demo-gas" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#1C6FD1;letter-spacing:1px">DEMO 1 · ROUTE-AWARE SEARCH + GEOMETRY</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">“Gas on the right, on the way”</h2>
+</div>
+<div style="display:flex;gap:56px;flex:1">
+<div style="width:500px;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:28px;line-height:1.45">DuckDB reads Overture’s GeoParquet in place: stations within 80 m of the road, right of travel.</p>
+<p style="font-size:28px;line-height:1.45;color:#3B4660">The final route’s last 15 m into the stop decide the side. Arrive with it on the left: reject, re-pick.</p>
+<p style="font-size:28px;line-height:1.45;color:#3B4660">Picked: a 76 on W Calaveras, +0.5 min. To SJC it says no: freeway the whole way.</p>
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:24px;line-height:1.5;color:#1C6FD1">read_parquet · /route · /trace_attributes</p>
+</div>
+<img src="/_blob/9e3520f751803789c379219ae68b2f1d" alt="App: Great Mall to Levi's Stadium with a 76 station on the right on West Calaveras Boulevard; checks pass" style="width:1108px;height:623px;object-fit:contain;border-radius:16px;border:1px solid #D9D4C7">
+</div>
+<aside>“Take me to Levi’s Stadium, and get gas on the way at a station on the right so I don’t have to turn across traffic.” The model sets side: right on a gas errand; nothing else. DuckDB queries the Overture GeoParquet directly, no import, for stations within 80 meters of the road on the right of travel. Which side of the plain route a station sits on is only a hint, because the final route can reach it another way, so the check is geometric: the final route’s heading over its last 15 meters into the stop. If you’d arrive with it on your left, it’s rejected and the planner picks again. Here: a 76 on West Calaveras, half a minute out of the way. Same request to San Jose airport gives an honest no: the route is freeway the whole way, and nothing fronts a freeway.</aside>
+</section>

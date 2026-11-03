@@ -1,0 +1,19 @@
+[Unit]
+Description=Exagion exagion-cctv
+After=network-online.target
+
+[Service]
+# per-machine settings, optional (README: "Running it unattended")
+EnvironmentFile=-%h/.config/exagion.env
+WorkingDirectory=%h/TurnByTurn/backend
+Environment=PYTHONPATH=.
+# ffmpeg is not on systemd's PATH when it comes from conda
+Environment=FFMPEG=%h/miniforge3/bin/ffmpeg
+ExecStart=/usr/bin/bash -c 'exec $HOME/geo/cctv/venv/bin/python -m livetraffic.cctv >> $HOME/geo/livetraffic/cctv.log 2>&1'
+Restart=always
+# below interactive work and other services on a shared machine
+Nice=10
+RestartSec=30
+
+[Install]
+WantedBy=default.target

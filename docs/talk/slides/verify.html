@@ -1,0 +1,19 @@
+<section id="verify" data-transition="fade" style="background:#14213D;color:#F7F5F0;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1;color:#F7F5F0">Never trust the planner. Check the line.</h2>
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:32px">
+<div style="display:flex;flex-direction:column;gap:16px;background:#1F2E52;padding:40px;border-radius:20px">
+<h3 style="font-size:36px;font-weight:600;color:#7FB2F0">Fresh map-match</h3>
+<p style="font-size:30px;line-height:1.45;color:#BFCCE0">The final line goes back through Valhalla’s trace_attributes. Checks read those edges, not the planner’s notes.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#1F2E52;padding:40px;border-radius:20px">
+<h3 style="font-size:36px;font-weight:600;color:#7FB2F0">Every constraint</h3>
+<p style="font-size:30px;line-height:1.45;color:#BFCCE0">Stops visited and in order, areas and roads avoided, detour bounds, closing times, arrival deadline.</p>
+</div>
+<div style="display:flex;flex-direction:column;gap:16px;background:#1F2E52;padding:40px;border-radius:20px">
+<h3 style="font-size:36px;font-weight:600;color:#7FB2F0">Shown, not hidden</h3>
+<p style="font-size:30px;line-height:1.45;color:#BFCCE0">A failed check turns the result red with the reason. The route is still drawn.</p>
+</div>
+</div>
+<p style="font-size:40px;line-height:1.35;color:#F7F5F0">Retry loops fix <b>loud</b> failures. A verifier turns <span style="color:#FFA94D">silent</span> failures into loud ones.</p>
+<aside>Every demo you saw ended with an “independent check” panel. That’s not decoration. The most dangerous failures in this system are silent: an exclusion polygon Valhalla rejected, a stop the solver quietly skipped, a deadline it couldn’t meet. They all produce a plausible-looking blue line. So the final line is map-matched again from scratch and every constraint is re-checked against those edges. In earlier benchmarking with OR-Tools code generation, a small model plus a verifier loop beat an 80-billion-parameter model on accuracy and wall clock. Same idea here.</aside>
+</section>

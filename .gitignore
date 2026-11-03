@@ -1,0 +1,30 @@
+# Dependencies and builds
+node_modules/
+dist/
+.vite/
+
+# Local configuration and secrets
+.env.local
+.env.*.local
+*.local
+
+# Python environments and caches
+backend/venv/
+venv/
+.venv/
+__pycache__/
+*.py[cod]
+
+# Native generated web assets
+android/app/src/main/assets/public/
+android/app/src/main/assets/capacitor.config.json
+ios/App/App/public/
+ios/App/App/capacitor.config.json
+
+# Editor and operating-system files
+.DS_Store
+.idea/
+.vscode/
+*.log
+*.lyx~
+*.lyx.emergency

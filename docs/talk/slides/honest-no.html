@@ -1,0 +1,15 @@
+<section id="honest-no" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#C2410C;letter-spacing:1px">BREAKS · IMPOSSIBLE REQUESTS</p>
+<h2 style="font-size:64px;font-weight:600;line-height:1.1">When the answer is no, say no, with the number</h2>
+</div>
+<div style="display:flex;gap:56px;flex:1">
+<div style="width:500px;display:flex;flex-direction:column;gap:24px">
+<p style="font-size:30px;line-height:1.45"><b>“Home by five”</b> at 4:55 with three errands: OR-Tools relaxes the deadline, the verifier fails it: arrive 5:05.</p>
+<p style="font-size:30px;line-height:1.45"><b>“A car wash under one minute out of the way”:</b> “the closest adds 3.2 min.”</p>
+<p style="font-size:30px;line-height:1.45;color:#3B4660">Never a plausible route that quietly breaks the request.</p>
+</div>
+<img src="/_blob/c9f786e1f56c81364cc65a6950446c86" alt="App: three errands near the Great Mall with a failed check; the reply says you would arrive home at 5:05, five minutes late" style="width:1108px;height:623px;object-fit:contain;border-radius:16px;border:1px solid #D9D4C7">
+</div>
+<aside>Over-constrained requests are where a system shows its character. The easy failure mode is to drop the constraint that doesn’t fit and return a nice route. Here, at 4:55, three errands and home by five can’t fit. When OR-Tools can’t meet the time windows, it re-solves without them, the verifier marks the deadline as failed with the actual arrival, 5:05, and the assistant asks which stop to drop. When no candidate meets a detour bound, the answer is a sentence with the closest real number.</aside>
+</section>

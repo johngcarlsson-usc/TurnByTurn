@@ -1,0 +1,17 @@
+[Unit]
+Description=Exagion exagion-livetraffic
+After=network-online.target
+
+[Service]
+# per-machine settings, optional (README: "Running it unattended")
+EnvironmentFile=-%h/.config/exagion.env
+WorkingDirectory=%h/TurnByTurn/backend
+
+ExecStart=/usr/bin/bash -c 'exec venv/bin/python -m livetraffic.run >> $HOME/geo/livetraffic/run.log 2>&1'
+Restart=always
+# below interactive work and other services on a shared machine
+Nice=10
+RestartSec=30
+
+[Install]
+WantedBy=default.target

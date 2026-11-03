@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Exagion</string>
+    <string name="title_activity_main">Exagion</string>
+    <string name="package_name">io.turnbyturn.navigation</string>
+    <string name="custom_url_scheme">io.turnbyturn.navigation</string>
+</resources>

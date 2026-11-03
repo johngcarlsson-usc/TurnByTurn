@@ -1,0 +1,15 @@
+<section id="stack" data-transition="fade" style="background:#14213D;color:#F7F5F0;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:48px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1;color:#F7F5F0">The toolbox: open data, open engines</h2>
+<table style="font-size:28px;color:#F7F5F0">
+<tr><th style="width:24%;text-align:left;color:#7FB2F0">Tool</th><th style="width:60%;text-align:left;color:#7FB2F0">What we use from it</th><th style="width:16%;text-align:left;color:#7FB2F0">Demos</th></tr>
+<tr><td>Valhalla</td><td>/route · /sources_to_targets · /trace_attributes · exclude_locations</td><td>all</td></tr>
+<tr><td>Overture + DuckDB</td><td>273k Bay Area places, read_parquet in place, no import</td><td>1 2 4 5</td></tr>
+<tr><td>Photon + Nominatim</td><td>place, street and town names, from OSM, local</td><td>all</td></tr>
+<tr><td>OR-Tools</td><td>RoutingModel: disjunctions, time windows, pickup and delivery</td><td>4 5</td></tr>
+<tr><td>LLM + JSON schema</td><td>Ollama locally, or any OpenAI-compatible API</td><td>all</td></tr>
+<tr><td>Caltrans PeMS</td><td>loop-detector speeds per hour of week → Valhalla predicted traffic</td><td>all</td></tr>
+<tr><td>Ferrostar</td><td>turn-by-turn core, Rust → WASM, in the browser</td><td>5</td></tr>
+</table>
+<p style="font-size:28px;line-height:1.4;color:#BFCCE0">One laptop, 12 GB GPU. All five demos also run on a local qwen3.6 35B-A3B: same plans, 18–61 s each.</p>
+<aside>Here’s the toolbox, and which demo uses which piece. Valhalla does the routing on a whole-US graph built from OpenStreetMap; we use four of its features: route, matrix, map-matching with trace_attributes, and per-request exclusions. Overture’s places are a GeoParquet file that DuckDB queries in place. Photon and Nominatim turn names into coordinates, locally, from the same OSM data. OR-Tools does the optimization. The language model sits behind a JSON schema; the screenshots were taken with a hosted model, Beam-1.0, and the same five requests also run on a local qwen3.6 35B-A3B through Ollama on this laptop: same stops, every check passing, 18 to 61 seconds each instead of 3 to 14. Getting that to work took three fixes this week, all in the repo. Speeds come from Caltrans PeMS loop detectors, built into Valhalla’s predicted traffic, so a route at 5 pm is not a route at 3 am. Valhalla over OSRM, deliberately: OSRM is faster at matrices, but every request here carries its own rules, and that’s Valhalla’s strength.</aside>
+</section>

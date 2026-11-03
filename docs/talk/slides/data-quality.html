@@ -1,0 +1,16 @@
+<section id="data-quality" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:flex;flex-direction:column;gap:56px">
+<div style="display:flex;flex-direction:column;gap:12px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;color:#C2410C;letter-spacing:1px">BREAKS · DATA</p>
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">The verifier can’t catch a wrong category</h2>
+</div>
+<table style="font-size:32px;color:#14213D">
+<tr><th style="width:34%;text-align:left">Overture place</th><th style="width:26%;text-align:left">Tagged as</th><th style="width:40%;text-align:left">Actually</th></tr>
+<tr><td>Oportun (~20 sites)</td><td>pharmacy</td><td>a lender; confidence 0.92–0.99</td></tr>
+<tr><td>Evernote</td><td>gas station</td><td>a software company</td></tr>
+<tr><td>Biocardia</td><td>pharmacy</td><td>a biotech firm</td></tr>
+<tr><td>Gano Excel, Fairfield</td><td>coffee shop</td><td>a coffee company’s business-park unit; picked for “coffee in an hour”</td></tr>
+<tr><td>Hills Bros. Coffee Plant</td><td>coffee shop</td><td>a historic building</td></tr>
+</table>
+<p style="font-size:34px;line-height:1.45;color:#3B4660">No confidence threshold removes these, and the route really does stop where the data says a pharmacy is. Today: a small, visible deny list. Better: report it upstream.</p>
+<aside>The first time I ran the errands demo, it sent me to Oportun for my prescription. Oportun is a lending company; Overture tags about twenty of its Bay Area sites as pharmacies at 0.92 to 0.99 confidence. Nothing downstream can catch that: the solver did its job, the verifier confirms the route stops at the place labeled pharmacy. Semantic errors in open data pass every geometric check. The patch is a deny list in the code with a comment explaining why. It’s ugly on purpose, so it’s visible. It grew this week: the Sacramento coffee demo first stopped at Gano Excel in Fairfield, “Unit C” of a business park, tagged as a coffee shop. It’s a company that sells packaged coffee.</aside>
+</section>

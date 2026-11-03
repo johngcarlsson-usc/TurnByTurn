@@ -1,0 +1,12 @@
+{
+  "home": {
+    "label": "Home (Milpitas Public Library, stand-in)",
+    "lat": 37.43243,
+    "lng": -121.90704
+  },
+  "work": {
+    "label": "Work (Mountain View)",
+    "lat": 37.3894,
+    "lng": -122.0819
+  }
+}

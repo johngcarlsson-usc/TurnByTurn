@@ -1,0 +1,17 @@
+<section id="model-job" data-transition="fade" style="background:#F7F5F0;color:#14213D;font-family:'IBM Plex Sans', Arial, sans-serif;padding:128px;display:grid;grid-template-columns:1fr 1fr;gap:64px;align-items:center">
+<div style="display:flex;flex-direction:column;gap:40px">
+<h2 style="font-size:72px;font-weight:600;line-height:1.1">The model’s only job</h2>
+<p style="font-size:36px;line-height:1.45;color:#3B4660">One sentence in, one typed object out, held to a JSON schema by structured output.</p>
+<ul style="font-size:32px;line-height:1.5;color:#3B4660">
+<li><b>place</b> stops vs. <b>errand</b> stops (“a pharmacy”)</li>
+<li>order: as spoken, or optimize</li>
+<li>deadlines, closing times, “in an hour”</li>
+<li>areas and roads to avoid; who does what</li>
+</ul>
+<p style="font-size:32px;line-height:1.45;color:#1C6FD1">No places invented. No coordinates. No routes. No start: the phone knows where you are.</p>
+</div>
+<div style="background:#14213D;border-radius:20px;padding:48px">
+<p style="font-family:'JetBrains Mono', 'Courier New', monospace;font-size:26px;line-height:1.5;color:#E6EDF7">{<br>  "origin": null,  <span style="color:#7FB2F0">// phone GPS</span><br>  "destination": "home",<br>  "stops": [<br>    {"kind": "errand", "what": "pharmacy",<br>     "closesAt": "18:00"},<br>    {"kind": "errand", "what": "groceries"},<br>    {"kind": "errand", "what": "gas"}<br>  ],<br>  "stopOrder": "any",<br>  "arriveBy": "18:15"<br>}</p>
+</div>
+<aside>Here is the actual schema output for: “I need a pharmacy before it closes at six, groceries, and gas, in any order, and I have to be home by 6:15.” Notice what’s not in it. No store names, no coordinates: “a pharmacy” is a category, and choosing which pharmacy is an optimization problem, not a language problem. And no start: origin null means the phone’s GPS. Nobody tells their navigation app “I’m leaving work now”; it knows. Keeping the model’s output this small is what lets a three-billion-active-parameter local model do it reliably.</aside>
+</section>

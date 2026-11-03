@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Share Location</title>
+<style>
+  :root { --bg: #f7f5f0; --ink: #14213d; --muted: #5a6478; --ok: #2f9e44; --bad: #e03131; --accent: #1c7ed6; --card: #fff; }
+  * { box-sizing: border-box; }
+  body { margin: 0; padding: 20px 16px; background: var(--bg); color: var(--ink);
+    font: 17px/1.4 system-ui, -apple-system, "Segoe UI", sans-serif; }
+  h1 { font-size: 22px; margin: 0 0 4px; }
+  h2 { font-size: 18px; margin: 0 0 8px; }
+  p { margin: 0 0 16px; color: var(--muted); }
+  button, a.button { display: block; width: 100%; padding: 16px; font-size: 19px; font-weight: 600; border: 0;
+    border-radius: 14px; background: var(--accent); color: #fff; text-align: center; text-decoration: none;
+    margin-bottom: 10px; }
+  button.stop { background: var(--bad); }
+  a.button.secondary { background: #e7f0fb; color: var(--accent); }
+  .card { margin: 16px 0; padding: 16px; border-radius: 14px; background: var(--card); }
+  .row { display: flex; justify-content: space-between; gap: 12px; padding: 4px 0; }
+  .row b { font-variant-numeric: tabular-nums; text-align: right; }
+  .dot { display: inline-block; width: 12px; height: 12px; border-radius: 50%; background: #adb5bd; margin-right: 8px; }
+  .dot.live { background: var(--ok); }
+  .dot.error { background: var(--bad); }
+  .err { color: var(--bad); }
+  ol { margin: 0 0 12px; padding-left: 22px; }
+  li { margin: 4px 0; }
+  li small { color: var(--muted); }
+  [hidden] { display: none !important; }
+</style>
+</head>
+<body>
+<h1 id="title">Share your location</h1>
+<p id="intro">Exagion uses your position to plan who does which errand. Sharing stops when the link expires or you close this page.</p>
+<button id="toggle">Share my location</button>
+<div class="card">
+  <div class="row"><span><span id="dot" class="dot"></span><span id="state">Not sharing</span></span><b id="expires">–</b></div>
+  <div class="row"><span>Position</span><b id="pos">–</b></div>
+  <div id="error" class="err"></div>
+</div>
+<div class="card" id="trip" hidden>
+  <h2 id="trip-title">Your part</h2>
+  <p id="trip-summary"></p>
+  <ol id="trip-stops"></ol>
+  <a class="button" id="navigate" href="#">Start turn-by-turn</a>
+</div>
+<script>
+  const $ = (id) => document.getElementById(id);
+  const token = new URLSearchParams(location.search).get('t') || '';
+  const q = `t=${encodeURIComponent(token)}`;
+  let watchId = null;
+  let wakeLock = null;
+  let inFlight = false;
+  let pending = null;
+  let expiresAt = null;
+  let tripId = null;
+
+  const setState = (text, cls) => { $('state').textContent = text; $('dot').className = `dot ${cls || ''}`; };
+  const fail = (text) => { $('error').textContent = text; };
+
+  const post = async (fix) => {
+    if (inFlight) { pending = fix; return; }
+    inFlight = true;
+    try {
+      const r = await fetch(`/api/gps?${q}`, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(fix) });
+      if (r.status === 410) { stop(); fail('This link has expired.'); return; }
+      if (!r.ok) throw new Error(`HTTP ${r.status}`);
+      fail('');
+      setState('Sharing', 'live');
+    } catch (e) {
+      fail(`Can’t reach Exagion: ${e.message}`);
+      setState('Not reaching the server', 'error');
+    } finally {
+      inFlight = false;
+      if (pending) { const next = pending; pending = null; post(next); }
+    }
+  };
+
+  const onFix = (p) => {
+    const c = p.coords;
+    $('pos').textContent = `${c.latitude.toFixed(4)}, ${c.longitude.toFixed(4)} (±${Math.round(c.accuracy)} m)`;
+    post({ lat: c.latitude, lng: c.longitude, accuracy: c.accuracy, heading: c.heading, speed: c.speed, timestamp: p.timestamp });
+  };
+
+  const stop = () => {
+    if (watchId !== null) navigator.geolocation.clearWatch(watchId);
+    watchId = null;
+    wakeLock?.release?.();
+    setState('Not sharing');
+    $('toggle').textContent = 'Share my location';
+    $('toggle').className = '';
+  };
+
+  $('toggle').onclick = async () => {
+    if (watchId !== null) { stop(); return; }
+    if (!window.isSecureContext) { fail('This page must be opened over https:// to use location.'); return; }
+    watchId = navigator.geolocation.watchPosition(onFix, (e) => {
+      fail(`Location error: ${e.message}.${e.code === 1 ? ' Allow location for this site in your browser settings.' : ''}`);
+      setState('No location', 'error');
+    }, { enableHighAccuracy: true, maximumAge: 0, timeout: 20000 });
+    try { wakeLock = await navigator.wakeLock?.request('screen'); } catch (_) { /* keep the screen on manually */ }
+    setState('Waiting for GPS…');
+    $('toggle').textContent = 'Stop sharing';
+    $('toggle').className = 'stop';
+  };
+
+  const tick = () => {
+    if (expiresAt) {
+      const left = Math.round((expiresAt * 1000 - Date.now()) / 60000);
+      $('expires').textContent = left > 0 ? `${left} min left` : 'expired';
+      if (left <= 0) stop();
+    }
+  };
+
+  const showTrip = (trip) => {
+    if (!trip || trip.id === tripId) return;
+    tripId = trip.id;
+    const pts = trip.navRequest.points;
+    $('trip').hidden = false;
+    $('trip-title').textContent = `Your part${trip.from ? `, from ${trip.from}` : ''}`;
+    $('trip-summary').textContent = trip.summary || '';
+    $('trip-stops').innerHTML = '';
+    pts.slice(1).forEach((p, i) => {
+      const li = document.createElement('li');
+      li.textContent = p.label || `Stop ${i + 1}`;
+      const task = (trip.stops || [])[i];
+      if (task) { const s = document.createElement('small'); s.textContent = ` · ${task}`; li.appendChild(s); }
+      $('trip-stops').appendChild(li);
+    });
+    $('navigate').href = `/?${q}&drive=trip`;
+    if (navigator.vibrate) navigator.vibrate(200);
+  };
+
+  const poll = async () => {
+    try {
+      const r = await fetch(`/api/trip/active?${q}`);
+      if (r.status === 410) { fail('This link has expired.'); return; }
+      showTrip((await r.json()).trip);
+    } catch (_) { /* try again */ }
+  };
+
+  (async () => {
+    if (!token) { fail('This link is missing its code. Ask for a new one.'); $('toggle').disabled = true; return; }
+    try {
+      const r = await fetch(`/api/share/info?${q}`);
+      const info = await r.json();
+      if (!r.ok) throw new Error(info.error || `HTTP ${r.status}`);
+      expiresAt = info.expiresAt;
+      $('title').textContent = 'Share your location for errands';
+      tick();
+    } catch (e) {
+      fail(e.message);
+      $('toggle').disabled = true;
+      return;
+    }
+    setInterval(tick, 15000);
+    poll();
+    setInterval(poll, 4000);
+  })();
+</script>
+</body>
+</html>
