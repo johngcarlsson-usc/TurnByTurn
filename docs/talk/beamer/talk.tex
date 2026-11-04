@@ -105,84 +105,103 @@
   \end{itemize}
 \end{frame}
 
-\begin{frame}{1. ``Gas on the right, on the way''}
+\begin{frame}{1. Gas on the right}
   \begin{columns}[T]
-    \begin{column}{0.38\textwidth}
-      \begin{itemize}
-        \item Candidates: Overture stations within 80 m of the road, right of travel
-        \item Decision: heading of the final route over its last 15 m into the stop
-        \item Arrival on the left $\Rightarrow$ reject and re-pick
-        \item Result: a 76 on W.~Calaveras Blvd, +0.5 min
-        \item To SJC: no candidate (freeway the whole way); reported as such
-      \end{itemize}
+    \begin{column}{0.4\textwidth}
+      {\small
+      \textbf{Prompt}
+
+      ``Take me to Levi's Stadium, and get gas on the way at a station on the right so I don't have to turn across traffic.''
+
+      \medskip
+      \textbf{Result}
+
+      The route stops at a 76 station on West Calaveras Boulevard. The station is on the right when the driver arrives, and the stop adds about 30 seconds.
+      }
     \end{column}
-    \begin{column}{0.6\textwidth}
+    \begin{column}{0.58\textwidth}
       \shot{gm-gas-right.png}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{2. ``Coffee about an hour from now''}
+\begin{frame}{2. Coffee during the drive}
   \begin{columns}[T]
-    \begin{column}{0.38\textwidth}
-      \begin{itemize}
-        \item Model output: \texttt{afterMinutes: 60}
-        \item Search the stretch driven 54--66 min in, from per-maneuver times
-        \item Empty (Benicia bridge) $\Rightarrow$ widen to $\pm 12$ min, with a note
-        \item Smallest detour: Peet's, Pleasant Hill, +0.3 min, reached at 50 min
-        \item Destination: the conference hotel
-      \end{itemize}
+    \begin{column}{0.4\textwidth}
+      {\small
+      \textbf{Prompt}
+
+      ``I'm driving to the Sheraton in downtown Sacramento, and I'm going to want coffee about an hour from now. Keep the detour small.''
+
+      \medskip
+      \textbf{Result}
+
+      There was no coffee shop near the exact one-hour point, so the app widened the search slightly and said so. It chose a Peet's in Pleasant Hill, reached about 50 minutes into the trip, with a detour of about 20 seconds.
+      }
     \end{column}
-    \begin{column}{0.6\textwidth}
+    \begin{column}{0.58\textwidth}
       \shot{gm-coffee-hour.png}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{3. ``Oakland airport, but stay off 880''}
+\begin{frame}{3. A route that avoids I-880}
   \begin{columns}[T]
-    \begin{column}{0.38\textwidth}
-      \begin{itemize}
-        \item ``Avoid I-880'' is a predicate on graph edges, not a toggle
-        \item Route $\to$ map-match $\to$ exclude violating edges $\to$ re-route
-        \item Result: I-680 and I-580, 63 min; +20 min over the plain route (dotted)
-        \item First run resolved ``Oakland airport'' to an airport hotel; a named kind must now match the OSM tag
-      \end{itemize}
+    \begin{column}{0.4\textwidth}
+      {\small
+      \textbf{Prompt}
+
+      ``Get me to Oakland airport, but stay off 880.''
+
+      \medskip
+      \textbf{Result}
+
+      The route takes I-680 and I-580 instead of I-880. It takes 63 minutes, about 20 minutes longer than the usual route.
+      }
     \end{column}
-    \begin{column}{0.6\textwidth}
+    \begin{column}{0.58\textwidth}
       \shot{gm-no-880.png}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{4. ``Three errands, any order, home by 6:15''}
+\begin{frame}{4. Three errands with deadlines}
   \begin{columns}[T]
-    \begin{column}{0.38\textwidth}
-      \begin{itemize}
-        \item ``A pharmacy'' has hundreds of answers: choosing one is optimization, not language
-        \item 6 candidates per errand, by detour; one Valhalla matrix over all
-        \item OR-Tools chooses which pharmacy, grocery, and station, and the order
-        \item Result: Walgreens at 5:23 (closes 6:00); home at 5:25 (by 6:15)
-      \end{itemize}
+    \begin{column}{0.4\textwidth}
+      {\small
+      \textbf{Prompt}
+
+      ``I need a pharmacy before it closes at six, groceries, and gas, in any order, and I have to be home by 6:15.''
+
+      \medskip
+      \textbf{Result}
+
+      The app chooses the stores and their order. It reaches Walgreens at 5:23, before the pharmacy closes at 6:00, and gets home at 5:25, before the 6:15 deadline.
+      }
     \end{column}
-    \begin{column}{0.6\textwidth}
+    \begin{column}{0.58\textwidth}
       \shot{gm-errands.png}
     \end{column}
   \end{columns}
 \end{frame}
 
-\begin{frame}{5. ``Between the two of us, who should do what?''}
+\begin{frame}{5. Splitting tasks between two drivers}
   \begin{columns}[T]
-    \begin{column}{0.38\textwidth}
-      \begin{itemize}
-        \item Tasks: pick up our daughter at school, home by 3:30; groceries (30 min, as stated); a CVS
-        \item Drivers: me at the Great Mall, my wife at Fremont BART
-        \item Result: me: CVS, school, home 3:15; my wife: Whole Foods
-        \item Both done 3:34; either alone: 3:51 or 4:11
-      \end{itemize}
+    \begin{column}{0.44\textwidth}
+      {\footnotesize
+      \textbf{Prompt}
+
+      ``Another driver is at Fremont BART. Between us, someone needs to pick up a child at Stratford School and get the child home by 3:30. We also need groceries, which will take about 30 minutes, and a stop at CVS. Who should do what?''
+
+      \medskip
+      \textbf{Result}
+
+      Driver 1 stops at CVS, picks up the child, and gets home at 3:15. Driver 2 shops at Whole Foods. Both finish by 3:34. If either driver did everything alone, the work would finish at 3:51 or 4:11.
+      }
     \end{column}
-    \begin{column}{0.6\textwidth}
-      \shot{gm-team.png}
+    \begin{column}{0.54\textwidth}
+      \centering
+      \includegraphics[height=0.65\textheight,keepaspectratio,trim=452 0 0 0,clip]{gm-team.png}
     \end{column}
   \end{columns}
 \end{frame}
