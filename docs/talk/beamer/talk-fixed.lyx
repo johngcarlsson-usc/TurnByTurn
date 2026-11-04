@@ -6873,7 +6873,7 @@ Prompt
 \begin_inset Quotes eld
 \end_inset
 
-It's 3:00 pm. Another driver is at Fremont BART. Between us, someone needs to pick up a child at Stratford School and get the child home by 3:30. We also need groceries, which will take about 30 minutes, and a stop at CVS. Then we both go home. Who should do what?
+It's 3:00 pm. Another driver is at Fremont BART. Between us, someone needs to pick up a friend at Stratford School and get the friend home by 3:30. We also need groceries, which will take about 30 minutes, and a stop at CVS. Then we both go home. Who should do what?
 \begin_inset Quotes erd
 \end_inset
 
@@ -6897,7 +6897,7 @@ Result
 \begin_layout Columns
 
 \size footnotesize
-Driver 1 shops at Trader Joe's and gets home at 3:40. Driver 2 picks up the child, gets home at 3:29, then stops at CVS and is home again at 3:38. If either driver did everything alone, the work would finish at 3:58 or 4:17. 
+Driver 1 shops at Trader Joe's and gets home at 3:40. Driver 2 picks up the friend, gets home at 3:29, then stops at CVS and is home again at 3:38. If either driver did everything alone, the work would finish at 3:58 or 4:17. 
 \size default
  
 \begin_inset ERT
