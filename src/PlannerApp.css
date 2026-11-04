@@ -36,7 +36,6 @@
 }
 
 .chat-thread {
-  margin-top: 10px;
   overflow-y: auto;
   min-height: 0;
   max-height: 30vh;
@@ -45,6 +44,16 @@
   flex-direction: column;
   gap: 8px;
   overscroll-behavior: contain;
+}
+
+.chat-header {
+  margin-top: 8px;
+  flex: 0 0 auto;
+}
+
+.constraints-collapse {
+  flex: 0 0 auto;
+  min-height: 0;
 }
 
 .chat-thread:not(:empty) {

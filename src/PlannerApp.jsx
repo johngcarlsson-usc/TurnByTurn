@@ -5,7 +5,7 @@ import {
 } from '@mantine/core';
 import {
   IconAlertTriangle, IconBrain, IconCar, IconCheck, IconChevronDown, IconChevronRight, IconCircleX, IconMapPin,
-  IconCode, IconNavigation, IconPlayerPlay, IconRoute, IconSend, IconX,
+  IconCode, IconNavigation, IconPlayerPlay, IconRoute, IconSend, IconTrash, IconX,
 } from '@tabler/icons-react';
 import { Capacitor } from '@capacitor/core';
 import * as maplibregl from 'maplibre-gl';
@@ -182,10 +182,17 @@ const PlannerApp = ({ onNavigate }) => {
   const [showTrace, setShowTrace] = useState(true);
   const [showSteps, setShowSteps] = useState(false);
   const [phase, setPhase] = useState('');
-  useEffect(() => {
+  const scrollChatToEnd = () => {
     const thread = chatThreadRef.current;
     if (thread) thread.scrollTop = thread.scrollHeight;
+  };
+  useEffect(() => {
+    scrollChatToEnd();
   }, [transcript, loading]);
+  useEffect(() => {
+    const timer = setTimeout(scrollChatToEnd, 220);
+    return () => clearTimeout(timer);
+  }, [showEditor]);
 
   const scenario = useMemo(() => (scenarioId ? getPlannerScenario(scenarioId) : null), [scenarioId]);
   const gpsMarkerRef = useRef(null);
@@ -298,6 +305,13 @@ const PlannerApp = ({ onNavigate }) => {
   const clearTimers = () => {
     timersRef.current.forEach(clearTimeout);
     timersRef.current = [];
+  };
+
+  const clearChat = () => {
+    transcriptRef.current = [];
+    setTranscript([]);
+    setQuery('');
+    setError('');
   };
 
   const drawMarkers = useCallback((res) => {
@@ -696,12 +710,21 @@ const PlannerApp = ({ onNavigate }) => {
               ir.arriveBy && `by ${ir.arriveBy}`, ir.meetup.friendFrom && 'meetup', ir.team?.tasks?.length && 'split with partner'].filter(Boolean).join(' · ') || 'none'}
           </Text>
         </UnstyledButton>
-        <Collapse in={showEditor}>
+        <Collapse in={showEditor} className="constraints-collapse">
           <ScrollArea.Autosize mah={360} type="auto" offsetScrollbars mt={6}>
             <ConstraintEditor ir={ir} onChange={editIr} />
           </ScrollArea.Autosize>
         </Collapse>
 
+        {transcript.length > 0 && (
+          <Group justify="space-between" className="chat-header">
+            <Text size="xs" fw={600} c="dimmed">Conversation</Text>
+            <Button size="compact-xs" variant="subtle" color="gray" leftSection={<IconTrash size={12} />}
+              onClick={clearChat} disabled={loading} aria-label="Clear chat">
+              Clear chat
+            </Button>
+          </Group>
+        )}
         <div className="chat-thread" ref={chatThreadRef} role="log" aria-label="Trip conversation" aria-live="polite">
           {transcript.filter((message) => ['user', 'assistant'].includes(message.role) && message.content).map((message, index) => (
             <div key={index} className={`chat-message chat-message-${message.role}`}>
