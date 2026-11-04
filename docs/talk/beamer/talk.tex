@@ -139,43 +139,6 @@
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Candidates and detours}
-  \begin{columns}[T]
-    \begin{column}{0.44\textwidth}\small
-      \begin{itemize}
-        \item Prefilter by distance to the route (2 km; 80 m for ``on the right'')
-        \item Decide by time:
-          \[ \delta(p) = t(o,p) + t(p,d) - t(o,d) \]
-        \item Two thin matrices ($1\times n$, $n\times 1$) screen $n$ candidates; the best 6 per errand go on
-        \item Time window: with $T(x)$ the elapsed time at $x$ on the base route,
-          \[ S(\tau) = \{x : |T(x)-\tau| \le w\} \]
-          with $w=\max(5,\, 0.1\tau)$ min, widened to $2w$, $3w$ if empty
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.54\textwidth}
-\begin{semiverbatim}\scriptsize
-SELECT id, name, category, lat, lon
-FROM read_parquet('places.parquet')
-WHERE lat BETWEEN ? AND ?
-  AND lon BETWEEN ? AND ?
-  AND category IN ('coffee_shop', 'cafe')
-  AND coalesce(confidence, 0) >= 0.5
-
-# shapely: offset and position on the route
-offset = chunks[tree.nearest(pt)].distance(pt)
-along  = line.project(pt) / line.length
-
-# Valhalla /sources_to_targets
-to_c   = matrix([origin], cands)[0][0]
-from_c = [r[0] for r in matrix(cands, [dest])[0]]
-detour = [a + b - direct
-          for a, b in zip(to_c, from_c)]
-\end{semiverbatim}
-      {\footnotesize \texttt{nlroute/places.py}, \texttt{planner.py} (trimmed)}
-    \end{column}
-  \end{columns}
-\end{frame}
-
 \begin{frame}{3. ``Oakland airport, but stay off 880''}
   \begin{columns}[T]
     \begin{column}{0.38\textwidth}
@@ -188,44 +151,6 @@ detour = [a + b - direct
     \end{column}
     \begin{column}{0.6\textwidth}
       \shot{gm-no-880.png}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}[fragile]{Avoidance as a fixed-point iteration}
-  \begin{columns}[T]
-    \begin{column}{0.44\textwidth}\small
-      \begin{itemize}
-        \item Valhalla excludes points, not predicates. With rule $\varphi$:
-          \begin{align*}
-            X_0 &= \emptyset \\
-            r_k &= \mathrm{route}(o, d;\, X_k) \\
-            B_k &= \{e \in E(r_k) : \varphi(e)\} \\
-            X_{k+1} &= X_k \cup m(B_k)
-          \end{align*}
-          $m$: edge midpoints. Stop when $B_k=\emptyset$.
-        \item $X_k$ is increasing; at most 8 rounds
-        \item This run: $k=0$: 43.5 min, $|B_0|=122$; \\ $k=1$: 63.1 min, $B_1=\emptyset$. Total 121 ms.
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.54\textwidth}
-\begin{semiverbatim}\scriptsize
-for attempt in range(MAX_EXCLUSION_ROUNDS):
-    trip = valhalla.route(points, costing, opts,
-                          exclude_locations)
-    # /trace_attributes: the edges driven
-    edges = valhalla.edges_for_route(trip, costing)
-    bad = [e for e in edges
-           if any(r.violates(e) for r in rules)]
-    if not bad:
-        break
-    new = [midpoint(e) for e in bad
-           if midpoint(e) not in exclude_locations]
-    if not new:
-        break     # stuck: the verifier reports it
-    exclude_locations.extend(new)
-\end{semiverbatim}
-      {\footnotesize \texttt{nlroute/planner.py} (trimmed)}
     \end{column}
   \end{columns}
 \end{frame}
@@ -246,43 +171,6 @@ for attempt in range(MAX_EXCLUSION_ROUNDS):
   \end{columns}
 \end{frame}
 
-\begin{frame}[fragile]{Errands as a generalized TSP with time windows}
-  \begin{columns}[T]
-    \begin{column}{0.44\textwidth}\small
-      \begin{itemize}
-        \item Groups $G_1,\dots,G_m$ (pharmacies, groceries, stations); arc times $t_{ij}$, stop times $s_i$
-          \begin{align*}
-            \min\ & \textstyle\sum_{i,j} t_{ij}\, x_{ij} \\
-            \text{s.t.}\ & \textstyle\sum_{i \in G_k} y_i = 1 \quad \forall k \\
-            & T_j \ge T_i + s_i + t_{ij} \ \text{ if } x_{ij}=1 \\
-            & T_i \le \text{close}_i, \quad T_{\text{home}} \le \text{deadline}
-          \end{align*}
-        \item ``Exactly one'': a disjunction with max cardinality 1 and penalty $10^7$; a skipped group is reported infeasible
-        \item 20 nodes: matrix 0.4 s; guided local search, 1 s limit; path re-costed from the matrix
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.54\textwidth}
-\begin{semiverbatim}\scriptsize
-manager = RoutingIndexManager(n, 1, [orig], [home])
-routing = RoutingModel(manager)
-cb = routing.RegisterTransitCallback(transit)
-routing.SetArcCostEvaluatorOfAllVehicles(cb)
-routing.AddDimension(cb, 0, 24*3600, True, "Time")
-T = routing.GetDimensionOrDie("Time")
-for group in groups:
-    routing.AddDisjunction(
-        [manager.NodeToIndex(i) for i in group],
-        10**7, 1)
-for node, latest in windows.items():
-    T.CumulVar(manager.NodeToIndex(node)) \textbackslash
-     .SetMax(latest)
-T.CumulVar(routing.End(0)).SetMax(deadline)
-\end{semiverbatim}
-      {\footnotesize \texttt{nlroute/solver.py}: \texttt{solve\_any\_order} (trimmed)}
-    \end{column}
-  \end{columns}
-\end{frame}
-
 \begin{frame}{5. ``Between the two of us, who should do what?''}
   \begin{columns}[T]
     \begin{column}{0.38\textwidth}
@@ -295,43 +183,6 @@ T.CumulVar(routing.End(0)).SetMax(deadline)
     \end{column}
     \begin{column}{0.6\textwidth}
       \shot{gm-team.png}
-    \end{column}
-  \end{columns}
-\end{frame}
-
-\begin{frame}[fragile]{Two vehicles, pickup and delivery}
-  \begin{columns}[T]
-    \begin{column}{0.44\textwidth}\small
-      \begin{itemize}
-        \item Vehicles $v\in\{1,2\}$ start where each driver is; open routes via a virtual end with $t_{ie}=0$
-        \item Pickup $p$, drop $d$: same vehicle, $T_p \le T_d$, $T_d \le$ 15:30
-        \item Objective: total time of both drivers plus the span
-          \begin{align*}
-            \min\ & \textstyle\sum_v \sum_{i,j} (t_{ij}+s_i)\, x^v_{ij} \\
-            & + \textstyle\max_v T_{e}^v - \min_v T_{s}^v
-          \end{align*}
-        \item The span term makes splitting worthwhile. 20 nodes: matrix 0.3 s, search 2 s
-      \end{itemize}
-    \end{column}
-    \begin{column}{0.54\textwidth}
-\begin{semiverbatim}\scriptsize
-manager = RoutingIndexManager(n + 1, 2,
-                              [me, wife], [end, end])
-routing = RoutingModel(manager)
-T.SetGlobalSpanCostCoefficient(1)
-for group in groups:     # any grocery, any CVS
-    routing.AddDisjunction(
-        [manager.NodeToIndex(i) for i in group],
-        10**7, 1)
-p = manager.NodeToIndex(school)
-d = manager.NodeToIndex(home)
-routing.AddPickupAndDelivery(p, d)
-solver.Add(routing.VehicleVar(p)
-           == routing.VehicleVar(d))
-solver.Add(T.CumulVar(p) <= T.CumulVar(d))
-T.CumulVar(d).SetMax(deadline)
-\end{semiverbatim}
-      {\footnotesize \texttt{nlroute/solver.py}: \texttt{solve\_team} (trimmed)}
     \end{column}
   \end{columns}
 \end{frame}

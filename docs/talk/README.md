@@ -3,7 +3,9 @@
 FOSS4G 2026 lightning talk · Wed Nov 4, 15:00–15:25 · Compagno
 
 The deck is `beamer/talk.pdf`, built from `beamer/talk.tex` (default Beamer theme) with
-`tectonic beamer/talk.tex`; images come from `screenshots/`. An earlier version is a Claude Slides artifact,
+`tectonic beamer/talk.tex`; images come from `screenshots/`. The presentation version omits the five
+technical-analysis frames interleaved with the live examples, so the five request slides run consecutively.
+Those deep-dive notes remain below as optional backup material. An earlier version is a Claude Slides artifact,
 whose source is `deck.json` and `slides/<id>.html`. The script below is that version's speaker notes, slide
 by slide; the Beamer frames follow the same order, except that "One pattern" and "The model's only job"
 are one frame and the "Where it breaks" divider is a Beamer section instead of a slide.
