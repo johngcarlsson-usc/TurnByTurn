@@ -1,0 +1,7925 @@
+#LyX 2.5 created this file. For more info see https://www.lyx.org/
+\lyxformat 643
+\begin_document
+\begin_header
+\save_transient_properties true
+\origin unavailable
+\textclass beamer
+\begin_preamble
+% FOSS4G 2026: Natural-Language Routing on an Open Stack.
+% Default Beamer theme. Build: tectonic talk.tex (screenshots from ../screenshots, made by
+% scripts/capture_talk.py). Speaker notes for every slide: ../README.md.
+\setbeamertemplate{navigation symbols}{}
+\setbeamertemplate{footline}[frame number]
+\graphicspath{{../screenshots/}}
+
+\newcommand{\shot}[1]{\includegraphics[width=\linewidth]{#1}}
+\newcommand{\api}[1]{\texttt{#1}}
+
+\title{Natural-Language Routing on an Open Stack}
+\author{John Gunnar Carlsson \and Andreas Royset}
+\date{FOSS4G 2026 \\ Wednesday, November 4}
+\usepackage{tikz}
+\usetikzlibrary{arrows.meta,calc}
+\end_preamble
+\options aspectratio=169
+\use_default_options false
+\maintain_unincluded_children no
+\language english
+\language_package none
+\inputencoding utf8
+\fontencoding default
+\font_roman "default" "default"
+\font_sans "default" "default"
+\font_typewriter "default" "default"
+\font_math "auto" "auto"
+\font_default_family default
+\use_non_tex_fonts false
+\font_sc false
+\font_roman_osf false
+\font_sans_osf false
+\font_typewriter_osf false
+\font_sf_scale 100 100
+\font_tt_scale 100 100
+\use_microtype false
+\use_dash_ligatures true
+\graphics default
+\default_output_format pdf2
+\output_sync 0
+\bibtex_command default
+\index_command default
+\float_placement class
+\float_alignment class
+\paperfontsize default
+\spacing single
+\use_hyperref false
+\papersize default
+\use_geometry true
+\use_package amsmath 2
+\use_package amssymb 2
+\use_package cancel 0
+\use_package esint 1
+\use_package mathdots 0
+\use_package mathtools 0
+\use_package mhchem 0
+\use_package stackrel 0
+\use_package stmaryrd 0
+\use_package undertilde 0
+\cite_engine basic
+\cite_engine_type default
+\biblio_style plain
+\use_bibtopic false
+\use_indices false
+\paperorientation portrait
+\suppress_date false
+\justification true
+\crossref_package prettyref
+\use_formatted_ref 0
+\use_minted 0
+\use_lineno 0
+\backgroundcolor none
+\fontcolor none
+\notefontcolor lightgray
+\boxbgcolor red
+\table_border_color default
+\table_odd_row_color default
+\table_even_row_color default
+\table_alt_row_colors_start 1
+\index Index
+\shortcut idx
+\color #008000
+\end_index
+\secnumdepth 3
+\tocdepth 3
+\paragraph_separation indent
+\paragraph_indentation default
+\is_math_indent 0
+\math_numbering_side default
+\quotes_style english
+\dynamic_quotes 0
+\papercolumns 1
+\papersides 1
+\paperpagestyle default
+\tablestyle default
+\tracking_changes false
+\output_changes false
+\change_bars false
+\postpone_fragile_content true
+\html_math_output 0
+\html_css_as_file 0
+\html_be_strict false
+\docbook_table_output 0
+\docbook_mathml_prefix 1
+\docbook_mathml_version 0
+\end_header
+
+\begin_body
+
+\begin_layout Frame
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+titlepage
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Section
+Problem
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Maps expose toggles,
+ but requests are more fluid
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+What navigation products accept:
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+global switches:
+ avoid highways,
+ tolls,
+ ferries 
+\end_layout
+
+\begin_layout Itemize
+search ranked by distance from the user (
+\begin_inset Quotes eld
+\end_inset
+
+coffee near me
+\begin_inset Quotes erd
+\end_inset
+
+) 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+What people actually ask for:
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+gas on the right,
+ so I don't turn across traffic
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+coffee about an hour from now
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+stay off 880
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+between the two of us,
+ who picks up our kid?
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+Each is a constraint expressible in plain language and computable with open tools 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Optimization background
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Operations research in one slide
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+A model:
+ decision variables,
+ constraints,
+ an objective 
+\begin_inset Formula 
+\[
+\min_{x\in X}f(x)\text{ subject to }g_{i}(x)\le0
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+The modelling is the hard part;
+ solvers are interchangeable behind it 
+\end_layout
+
+\begin_layout Itemize
+Families:
+ linear programs (LP),
+ mixed-integer programs (MIP),
+ constraint programming (CP),
+ local search 
+\end_layout
+
+\begin_layout Itemize
+Classic uses:
+ airline crews,
+ supply chains,
+ scheduling,
+ network design,
+ and vehicle routing 
+\end_layout
+
+\begin_layout Itemize
+Most routing problems are NP-hard;
+ practical instances are solved by good heuristics with a time limit,
+ not by proofs of optimality 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Vehicle routing:
+ a family of problems
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+\begin_inset Argument 1
+status collapsed
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+0.5
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+TSP:
+ one tour through all nodes,
+ minimum length 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+VRP:
+ several vehicles share the nodes 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+VRPTW:
+ each node has an arrival window 
+\begin_inset Formula $[a_{i},b_{i}]$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Pickup and delivery:
+ pairs 
+\begin_inset Formula $(p,d)$
+\end_inset
+
+,
+ same vehicle,
+ 
+\begin_inset Formula $p$
+\end_inset
+
+ before 
+\begin_inset Formula $d$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Generalized TSP:
+ nodes come in clusters;
+ visit exactly one per cluster 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Prize-collecting:
+ nodes are optional;
+ skipping one costs a penalty 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+All of these are one solver configured differently 
+\end_layout
+
+\begin_layout Column
+0.48
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\size small
+\begin_inset Preview
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+begin{tikzpicture}[x=0.9cm,y=0.9cm,font=
+\backslash
+scriptsize,
+\end_layout
+
+\begin_layout Plain Layout
+  cand/.style={circle,draw,fill=white,inner sep=1.3pt},
+\end_layout
+
+\begin_layout Plain Layout
+  pick/.style={circle,draw,fill=black,inner sep=1.6pt},
+\end_layout
+
+\begin_layout Plain Layout
+  end/.style={rectangle,draw,fill=black!12,inner sep=2.5pt},
+\end_layout
+
+\begin_layout Plain Layout
+  arr/.style={-{Latex[length=1.6mm]},semithick}]
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[dashed,rounded corners=6pt] (0.9,2.3) rectangle (2.7,3.7);
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[dashed,rounded corners=6pt] (3.3,0.2) rectangle (5.3,1.5);
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[dashed,rounded corners=6pt] (4.0,2.6) rectangle (5.9,3.9);
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[font=
+\backslash
+tiny] at (1.8,3.9) {pharmacies};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[font=
+\backslash
+tiny] at (4.3,0.0) {groceries};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[font=
+\backslash
+tiny] at (4.95,4.1) {gas};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+foreach 
+\backslash
+p in {(1.2,2.6),(2.4,3.4),(1.4,3.3)} 
+\backslash
+node[cand] at 
+\backslash
+p {};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+foreach 
+\backslash
+p in {(3.6,1.2),(5.0,0.5),(4.4,1.2)} 
+\backslash
+node[cand] at 
+\backslash
+p {};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+foreach 
+\backslash
+p in {(5.6,3.6),(4.3,3.6),(5.5,2.9)} 
+\backslash
+node[cand] at 
+\backslash
+p {};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[end] (s) at (0.4,0.6) {start};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[end] (h) at (6.6,1.6) {home};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[pick] (a) at (2.2,2.8) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[pick] (b) at (4.0,0.6) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[pick] (c) at (4.8,3.0) {};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[arr] (s) -- (a);
+ 
+\backslash
+draw[arr] (a) -- (c);
+ 
+\backslash
+draw[arr] (c) -- (b);
+ 
+\backslash
+draw[arr] (b) -- (h);
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[align=left,anchor=north west,font=
+\backslash
+tiny] at (0.2,-0.3)
+\end_layout
+
+\begin_layout Plain Layout
+  {visit exactly one node per cluster;
+\backslash
+
+\backslash
+
+\end_layout
+
+\begin_layout Plain Layout
+   the solver picks the member and the order together};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Google OR-Tools
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Open source (Apache 2.0),
+ maintained by Google 
+\end_layout
+
+\begin_layout Itemize
+CP-SAT:
+ constraint programming over a SAT core;
+ many MiniZinc Challenge gold medals 
+\end_layout
+
+\begin_layout Itemize
+Linear and mixed-integer:
+ one interface over GLOP,
+ PDLP,
+ SCIP,
+ HiGHS,
+ and commercial solvers 
+\end_layout
+
+\begin_layout Itemize
+Graph algorithms:
+ shortest paths,
+ max flow,
+ min-cost flow,
+ assignment 
+\end_layout
+
+\begin_layout Itemize
+Routing:
+ a vehicle-routing library on top of a CP solver,
+ with local search 
+\end_layout
+
+\begin_layout Itemize
+We use the routing library;
+ the same install would also schedule,
+ pack and assign 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+The routing library, in OR terms
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\size small
+
+\begin_inset Tabular 
+<lyxtabular version="3" rows="8" columns="3">
+<features tabularvalignment="middle" tabularwidth="0pt">
+<column alignment="none" valignment="top" special="@{}l">
+<column alignment="left" valignment="top">
+<column alignment="none" valignment="top" special="l@{}">
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Concept 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+In the model 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+OR-Tools name 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Arc cost 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+
+\begin_inset Formula $t_{ij}$
+\end_inset
+
+, driving times from Valhalla 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+transit callback 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Time along a route 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+
+\begin_inset Formula $T_j \ge T_i + s_i + t_{ij}$
+\end_inset
+
+ on arcs used 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+time dimension 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Time window 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+
+\begin_inset Formula $a_i \le T_i \le b_i$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+bounds on 
+\begin_inset Formula $T_i$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+One of a cluster 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+
+\begin_inset Formula $\sum_{i \in G_k} y_i = 1$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+disjunction 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Optional node 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+skip 
+\begin_inset Formula $i$
+\end_inset
+
+ at penalty 
+\begin_inset Formula $\pi_i$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+disjunction, penalty 
+\begin_inset Formula $\pi_i$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Pickup before drop 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+same vehicle, 
+\begin_inset Formula $T_p \le T_d$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+pickup–delivery pair 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Makespan 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+
+\begin_inset Formula $\max_v T^{\mathrm{end}}_v - \min_v T^{\mathrm{start}}_v$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+span cost 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+\end_layout
+\begin_layout Standard
+
+\size small
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Search: a construction heuristic, then a metaheuristic (guided local search, simulated annealing, tabu) until a time limit 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+No lower bound: the answer is a good solution, not a certified optimum 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Section
+Approach
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+Approach: the model fills in a form
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+
+\begin_inset Argument 1
+status collapsed
+
+
+\begin_layout Standard
+T
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.5
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+
+\size small
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+A language model reads the request and fills in a fixed form 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+The fields and their allowed values are set in advance; the model cannot answer outside them 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Ordinary code turns the form into an optimization model and solves it 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+The model never routes or optimizes; it sees no coordinates and no store names 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+The start is the phone's GPS position 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Every result is re-checked against the final route 
+\end_layout
+
+\end_deeper
+\size default
+
+\begin_layout Columns
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.46
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+
+\size small
+
+\begin_inset Quotes eld
+\end_inset
+
+I need a pharmacy before it closes at six, groceries, and gas, in any order, and I have to be home by 6:15.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\begin_inset Tabular 
+<lyxtabular version="3" rows="8" columns="2">
+<features tabularvalignment="middle" tabularwidth="0pt">
+<column alignment="none" valignment="top" special="@{}l">
+<column alignment="none" valignment="top" special="l@{}">
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Field 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Value 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+start 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+the phone's position 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+end 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+home 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+errand 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+pharmacy, closes 18:00 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+errand 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+groceries 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+errand 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+gas 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+order 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+any 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+arrive by 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+18:15 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\size default
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+How one request runs
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\align center
+\begin_inset Preview
+
+\begin_layout Standard
+\begin_inset Preview
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+begin{tikzpicture}[x=0.95cm,y=1cm,
+\end_layout
+
+\begin_layout Plain Layout
+  font={
+\backslash
+scriptsize
+\backslash
+hyphenpenalty=10000
+\backslash
+exhyphenpenalty=10000},
+\end_layout
+
+\begin_layout Plain Layout
+  box/.style={draw,rounded corners=1pt,align=center,inner sep=3pt,minimum height=0.95cm},
+\end_layout
+
+\begin_layout Plain Layout
+  llm/.style={box,fill=black!12},
+\end_layout
+
+\begin_layout Plain Layout
+  arr/.style={-{Latex[length=1.6mm]},semithick}]
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[box,text width=2.4cm] (words) at (1.45,0) {Driver's words
+\backslash
+
+\backslash
+ + phone GPS fix};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[llm,text width=3.0cm] (agent) at (5.0,0) {
+\backslash
+textbf{Chat agent} (LLM)
+\backslash
+
+\backslash
+ tools:
+ 
+\backslash
+texttt{plan
+\backslash
+_trip},
+ 
+\backslash
+texttt{search
+\backslash
+_places},
+ 
+\backslash
+texttt{drive
+\backslash
+_time}};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[llm,text width=2.6cm] (ir) at (8.75,0) {
+\backslash
+textbf{Extraction} (LLM)
+\backslash
+
+\backslash
+ fills in the form};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[box,text width=3.1cm] (geo) at (12.45,0) {
+\backslash
+textbf{Resolve} names:
+ Photon,
+ Nominatim;
+ avoid rules $
+\backslash
+to$ geometry};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[arr] (words) -- (agent);
+ 
+\backslash
+draw[arr] (agent) -- (ir);
+ 
+\backslash
+draw[arr] (ir) -- (geo);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[box,text width=12.6cm,minimum height=0.6cm] (disp) at (7.0,-1.4)
+\end_layout
+
+\begin_layout Plain Layout
+  {
+\backslash
+textbf{Dispatch} (plain code):
+ which fields of the form are set?};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[arr] (geo.south) -- (geo.south |- disp.north);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+foreach 
+\backslash
+x/
+\backslash
+n/
+\backslash
+t in {
+\end_layout
+
+\begin_layout Plain Layout
+  1.4/meet/{Meet a friend
+\backslash
+
+\backslash
+ 
+\backslash
+textit{enumerate meeting points}},
+\end_layout
+
+\begin_layout Plain Layout
+  4.2/team/{Two drivers
+\backslash
+
+\backslash
+ 
+\backslash
+textit{OR-Tools VRP,
+ pickup--delivery}},
+\end_layout
+
+\begin_layout Plain Layout
+  7.0/route/{No errands
+\backslash
+
+\backslash
+ 
+\backslash
+textit{one Valhalla} 
+\backslash
+textit{route}},
+\end_layout
+
+\begin_layout Plain Layout
+  9.8/dp/{Errands in the order given
+\backslash
+
+\backslash
+ 
+\backslash
+textit{layered shortest path}},
+\end_layout
+
+\begin_layout Plain Layout
+  12.6/gtsp/{Errands in any order
+\backslash
+
+\backslash
+ 
+\backslash
+textit{OR-Tools GTSP,
+ time windows}}}
+\end_layout
+
+\begin_layout Plain Layout
+  { 
+\backslash
+node[box,text width=2.3cm] (
+\backslash
+n) at (
+\backslash
+x,-2.8) {
+\backslash
+t};
+\end_layout
+
+\begin_layout Plain Layout
+    
+\backslash
+draw[arr] (
+\backslash
+x,-1.7) -- (
+\backslash
+n.north);
+\end_layout
+
+\begin_layout Plain Layout
+    
+\backslash
+draw[semithick] (
+\backslash
+n.south) -- (
+\backslash
+x,-3.72);
+ }
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[semithick] (1.4,-3.72) -- (12.6,-3.72);
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[llm,text width=2.4cm] (custom) at (1.45,-4.75) {
+\backslash
+textbf{Custom} (LLM) writes a filter and a check;
+ sandboxed};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[box,text width=3.0cm] (final) at (5.0,-4.75) {
+\backslash
+textbf{Final route}
+\backslash
+
+\backslash
+ Valhalla,
+ with exclusions};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[box,text width=2.6cm] (verify) at (8.75,-4.75) {
+\backslash
+textbf{Verify} on a fresh map-match};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[box,text width=3.1cm] (phone) at (12.45,-4.75) {Phone:
+ route,
+ checks,
+ turn-by-turn (Ferrostar)};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[arr] (5.0,-3.72) -- (final.north);
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[arr] (disp.west) -| ([xshift=-0.22cm]custom.west) -- (custom.west);
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[arr] (custom.east) -- (final.west);
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[arr] (final) -- (verify);
+ 
+\backslash
+draw[arr] (verify) -- (phone);
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[arr,dashed] (custom.south) |- (8.75,-6.1) -- (verify.south);
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[font=
+\backslash
+tiny,fill=white,inner sep=1pt] at (3.0,-6.1) {
+\backslash
+textit{check}};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[font=
+\backslash
+tiny,rotate=90,anchor=south,inner sep=1pt] at ([xshift=-0.22cm]custom.west |- 0,-3.0) {
+\backslash
+textit{no field fits}};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[font=
+\backslash
+tiny,anchor=south,inner sep=1pt] at ($(custom.east)!0.5!(final.west)$) {
+\backslash
+textit{filter}};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+draw[arr] ([xshift=9mm]final.south) ..
+ controls +(0.2,-0.75) and +(-0.2,-0.75) ..
+ ([xshift=-9mm]final.south);
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[font=
+\backslash
+tiny,align=center,fill=white,inner sep=1pt] at (5.0,-5.8) {avoided road used,
+ or stop on the left:
+ exclude,
+ re-pick};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+node[anchor=east,font=
+\backslash
+tiny] at (14.0,-6.1) {
+\backslash
+tikz
+\backslash
+fill[black!12,draw=black] (0,0) rectangle (0.3,0.18);
+ 
+\backslash
+ language model;
+ 
+\backslash
+ white:
+ deterministic code};
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+end{tikzpicture}
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+One request, end to end
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\size small
+
+\begin_inset Quotes eld
+\end_inset
+
+I need a pharmacy before it closes at six, groceries, and gas, in any order, and I have to be home by 6:15.
+\begin_inset Quotes erd
+\end_inset
+
+ (5:15 pm, Great Mall)
+\end_layout
+\begin_layout Standard
+
+\size small
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\size footnotesize
+
+\begin_inset Tabular 
+<lyxtabular version="3" rows="12" columns="5">
+<features tabularvalignment="middle" tabularwidth="0pt">
+<column alignment="none" valignment="top" special="@{}r">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="left" valignment="top">
+<column alignment="none" valignment="top" special="l@{}">
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Stage 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Done by 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Output 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Time 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+1 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Read the request 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+language model 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+it is a trip: plan it 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+2 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Fill in the form 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+language model 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+3 errands, 2 deadlines 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+2.8 s 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+3 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Choose the method 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+fixed rules 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+errands, any order 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ GTSP 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+4 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Places 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+saved places 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+home = Milpitas Library 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+5 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Direct route 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Valhalla 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+7.2 min 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+6 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Candidates 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Overture places 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+7 pharmacies, 27 groceries, 15 gas 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+7 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Screen 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+detour of each 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+best 6 per errand 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+8 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Travel times 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Valhalla 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+
+\begin_inset Formula $20\times20$
+\end_inset
+
+ matrix 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+0.34 s 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+9 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Solve 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+OR-Tools 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Nilgiris, Walgreens, 76; 10.4 min 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+1.0 s 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+10 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Check 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Valhalla map-match 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+5 of 5 checks pass 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+optimization total 1.4 s; request total 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+6.9 s 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 3
+status collapsed
+
+\begin_layout Plain Layout
+fragile
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Steps 1–2:
+ the two model calls
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+\begin_inset Argument 1
+status collapsed
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+0.44
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+The agent chooses a tool:
+ place search,
+ or drive time 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Its prompt sends errands and task splits to 
+\family typewriter
+plan_trip
+\family default
+ unmodified,
+ so the optimizer chooses the stores 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Extraction fills a fixed JSON schema,
+ enforced by the API (
+\family typewriter
+response_format:
+ json_schema
+\family default
+;
+ Ollama:
+ 
+\family typewriter
+format
+\family default
+) 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Then a sanitizer:
+ enums checked,
+ numbers clamped,
+ missing fields defaulted 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+No coordinates or store names in the form,
+ only words and times 
+\end_layout
+
+\begin_layout Column
+0.54
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\size small
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+begin{semiverbatim}
+\backslash
+scriptsize
+\end_layout
+
+\begin_layout Plain Layout
+// 1.
+ agent -> tool call
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+{"tool":
+ "plan_trip",
+ "args":
+ 
+\backslash
+{"request":
+\end_layout
+
+\begin_layout Plain Layout
+  "pharmacy,
+ groceries,
+ and gas,
+ in any
+\end_layout
+
+\begin_layout Plain Layout
+   order,
+ pharmacy must be before 6 PM,
+\end_layout
+
+\begin_layout Plain Layout
+   home by 6:15 PM"
+\backslash
+}
+\backslash
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+// 2.
+ extraction -> the form (trimmed)
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+{"origin":
+ null,
+  "destination":
+ "home",
+\end_layout
+
+\begin_layout Plain Layout
+ "stopOrder":
+ "any",
+ "arriveBy":
+ "18:15",
+\end_layout
+
+\begin_layout Plain Layout
+ "stops":
+ [
+\end_layout
+
+\begin_layout Plain Layout
+   
+\backslash
+{"kind":
+ "errand",
+ "what":
+ "pharmacy",
+\end_layout
+
+\begin_layout Plain Layout
+    "closesAt":
+ "18:00",
+ "brands":
+ []
+\backslash
+},
+\end_layout
+
+\begin_layout Plain Layout
+   
+\backslash
+{"kind":
+ "errand",
+ "what":
+ "groceries"
+\backslash
+},
+\end_layout
+
+\begin_layout Plain Layout
+   
+\backslash
+{"kind":
+ "errand",
+ "what":
+ "gas"
+\backslash
+}],
+\end_layout
+
+\begin_layout Plain Layout
+ "team":
+ null,
+ "meetup":
+ null,
+\end_layout
+
+\begin_layout Plain Layout
+ "custom":
+ null
+\backslash
+}
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+end{semiverbatim}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+Step 3: the form determines the problem
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+
+\begin_inset Argument 1
+status collapsed
+
+
+\begin_layout Standard
+T
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.34
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+
+\size small
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+The model never names an algorithm; it answers narrow questions about the text (
+\begin_inset Quotes eld
+\end_inset
+
+did they give an order?
+\begin_inset Quotes erd
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Fixed rules read the form, top to bottom 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Same form, same method: a wrong method traces back to one wrong field 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Here: errands, any order 
+\begin_inset Formula $\Rightarrow$
+\end_inset
+
+ GTSP with time windows 
+\end_layout
+
+\end_deeper
+\size default
+
+\begin_layout Columns
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.64
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+
+\size scriptsize
+
+\begin_inset Tabular 
+<lyxtabular version="3" rows="7" columns="3">
+<features tabularvalignment="middle" tabularwidth="0pt">
+<column alignment="none" valignment="top" special="@{}l">
+<column alignment="left" valignment="top">
+<column alignment="none" valignment="top" special="l@{}">
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+The form has 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+Problem 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+Solved by 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+a friend to meet 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+choose a meeting point 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+enumeration 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+tasks for two drivers 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+VRP, pickup–delivery 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+OR-Tools 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+a rule with no field 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+model-written filter 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+then as below 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+no errands 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+shortest path 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+Valhalla 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+errands, order given 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+layered shortest path 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+dynamic program 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+errands, any order 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+GTSP, time windows 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+OR-Tools 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\size default
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+What each field becomes
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\size small
+
+\begin_inset Tabular 
+<lyxtabular version="3" rows="11" columns="2">
+<features tabularvalignment="middle" tabularwidth="0pt">
+<column alignment="none" valignment="top" special="@{}l">
+<column alignment="none" valignment="top" special="l@{}">
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Field of the form 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+In the optimization model 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+errand (a kind, or chains) 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+cluster 
+\begin_inset Formula $G_k$
+\end_inset
+
+ of candidates from Overture; visit exactly one 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+named place 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+one node, geocoded 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+closes at, arrive by 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+time window: 
+\begin_inset Formula $T_i \le b_i$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+about 
+\begin_inset Formula $N$
+\end_inset
+
+ minutes in 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+candidates near where the direct route is at time 
+\begin_inset Formula $N$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+on the right 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+within 80 m, right of travel; re-pick on arrival 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+maximum detour 
+\begin_inset Formula $D$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+candidates only with 
+\begin_inset Formula $\delta(p) \le D$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+avoid a road or area 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+edges removed; re-solve until no avoided edge is used 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+pick someone up 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+pickup–delivery pair: same vehicle, 
+\begin_inset Formula $T_p \le T_d$
+\end_inset
+
+ 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+two drivers 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+second vehicle; objective adds the makespan 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+anything else 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+a model-written filter and check, run in isolation 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+\end_layout
+\begin_layout Standard
+
+\size small
+
+\begin_inset VSpace medskip
+\end_inset
+
+New combinations need no new code; a new kind of constraint needs a field and its translation. 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+Steps 4–8: from words to a 20-node instance
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+
+\begin_inset Argument 1
+status collapsed
+
+
+\begin_layout Standard
+T
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.4
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+
+\size small
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+Candidates: Overture places within 2 km of the direct route 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Screen by detour; keep the best 6 
+\begin_inset Formula \[ \delta(p) = t(o,p) + t(p,d) - t(o,d) \]
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Instance: start, home, 
+\begin_inset Formula $3\times6$
+\end_inset
+
+ candidates 
+\begin_inset Formula $= 20$
+\end_inset
+
+ nodes 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+One 
+\begin_inset Formula $20\times20$
+\end_inset
+
+ travel-time matrix from Valhalla (0.34 s; typical speeds in this run) 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Choices: 
+\begin_inset Formula $6^3$
+\end_inset
+
+ stores 
+\begin_inset Formula $\times 3!$
+\end_inset
+
+ orders 
+\begin_inset Formula $= 1296$
+\end_inset
+
+ tours 
+\end_layout
+
+\end_deeper
+\size default
+
+\begin_layout Columns
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.58
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+
+\size scriptsize
+
+\begin_inset Tabular 
+<lyxtabular version="3" rows="4" columns="4">
+<features tabularvalignment="middle" tabularwidth="0pt">
+<column alignment="none" valignment="top" special="@{}l">
+<column alignment="right" valignment="top">
+<column alignment="right" valignment="top">
+<column alignment="none" valignment="top" special="l@{}">
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+Errand 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="right" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+Found 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="right" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+Kept 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+Best two, 
+\begin_inset Formula $\delta$
+\end_inset
+
+ (min) 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+pharmacy 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="right" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+7 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="right" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+6 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+Walgreens 2.8, CVS 6.5 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+groceries 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="right" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+27 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="right" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+6 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+New India Bazar 0.8, Nilgiris 1.2 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+gas 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="right" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+15 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="right" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+6 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size scriptsize
+76 1.6, City Gas 2.5 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\size scriptsize
+
+\begin_inset VSpace medskip
+\end_inset
+
+Screening is per errand; the solver then sees the interactions: the chosen grocery is not the one with the smallest detour on its own 
+\size default
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+Steps 9–10: solve, then check independently
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+
+\begin_inset Argument 1
+status collapsed
+
+
+\begin_layout Standard
+T
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.5
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+
+\size small
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+Model: 1 vehicle, start and end fixed, 3 clusters of 6, pharmacy by 6:00, home by 6:15 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Search: cheapest-arc construction, guided local search, 1 s limit 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Result: 10.4 min (direct: 7.2) 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Re-costed from the matrix; the solver's objective is not trusted 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Check on a fresh map-match of the final route: each stop within 20 m of it, both deadlines met 
+\end_layout
+
+\end_deeper
+\size default
+
+\begin_layout Columns
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.46
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+
+\size small
+
+\begin_inset Tabular 
+<lyxtabular version="3" rows="6" columns="3">
+<features tabularvalignment="middle" tabularwidth="0pt">
+<column alignment="none" valignment="top" special="@{}l">
+<column alignment="left" valignment="top">
+<column alignment="none" valignment="top" special="l@{}">
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Stop 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Arrive 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Limit 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Great Mall 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+5:15 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Nilgiris (groceries) 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+5:21 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+Walgreens (pharmacy) 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+5:22 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+6:00 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+76 (gas) 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+5:23 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+home 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+5:25 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size small
+6:15 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+
+
+\size default
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Tools
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Valhalla (OpenStreetMap road graph):
+ routes,
+ travel-time matrices,
+ map-matching,
+ road exclusions,
+ time-dependent travel times 
+\end_layout
+
+\begin_layout Itemize
+Overture Maps places (273k in the Bay Area),
+ queried with DuckDB 
+\end_layout
+
+\begin_layout Itemize
+Photon and Nominatim:
+ OSM geocoding,
+ self-hosted 
+\end_layout
+
+\begin_layout Itemize
+OR-Tools routing:
+ disjunctions,
+ time windows,
+ pickup and delivery 
+\end_layout
+
+\begin_layout Itemize
+Language model:
+ any hosted model with a standard API,
+ or one run locally with Ollama 
+\end_layout
+
+\begin_layout Itemize
+Demos use Reflection AI's Beam-1.0 (501B-A23B),
+ chosen because its weights are open;
+ 3–14 s per request 
+\end_layout
+
+\begin_layout Itemize
+Caltrans PeMS loop detectors:
+ hour-of-week speeds loaded as Valhalla predicted traffic 
+\end_layout
+
+\begin_layout Itemize
+Ferrostar:
+ turn-by-turn navigation in the browser 
+\end_layout
+
+\begin_layout Itemize
+The local model works too:
+ all five demos run on qwen3.6 35B-A3B through Ollama on one laptop with a 12 GB GPU (18–61 s each) 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+Five requests
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Five requests from the Great Mall,
+ Milpitas
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Start:
+ a GPS fix posted by the phone;
+ no request states where the driver is 
+\end_layout
+
+\begin_layout Itemize
+Requests,
+ and what each exercises:
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Gas on the right,
+ on the way to Levi's Stadium 
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset space \quad{}
+\end_inset
+
+
+\size small
+DuckDB on Overture;
+ arrival-side geometry
+\size default
+ 
+\end_layout
+
+\begin_layout Enumerate
+Coffee about an hour into the drive to Sacramento 
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset space \quad{}
+\end_inset
+
+
+\size small
+maneuver times;
+ Valhalla matrix
+\size default
+ 
+\end_layout
+
+\begin_layout Enumerate
+Oakland airport,
+ but stay off 880 
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset space \quad{}
+\end_inset
+
+
+\size small
+map-match,
+ exclude,
+ re-route
+\size default
+ 
+\end_layout
+
+\begin_layout Enumerate
+Pharmacy before 6,
+ groceries,
+ gas,
+ home by 6:15 
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset space \quad{}
+\end_inset
+
+
+\size small
+OR-Tools:
+ disjunctions and time windows
+\size default
+ 
+\end_layout
+
+\begin_layout Enumerate
+Split the afternoon's tasks between two drivers 
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset space \quad{}
+\end_inset
+
+
+\size small
+OR-Tools:
+ two vehicles,
+ pickup and delivery
+\size default
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+All screenshots come from the live path (model in the loop),
+ via 
+\family typewriter
+scripts/capture_talk.py
+\family default
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+iffalse
+\end_layout
+
+\end_inset
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+The five requests as optimization problems
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Standard
+\size footnotesize
+
+\begin_inset Tabular 
+<lyxtabular version="3" rows="6" columns="3">
+<features tabularvalignment="middle" tabularwidth="0pt">
+<column alignment="none" valignment="top" special="@{}l">
+<column alignment="left" valignment="top">
+<column alignment="none" valignment="top" special="l@{}">
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Request 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Problem 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+Solved by 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+1. Gas on the right 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+best of 
+\begin_inset Formula $n$
+\end_inset
+
+ filtered candidates 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" topline="true" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+one matrix, minimum 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+2. Coffee an hour in 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+same, filtered by time on route 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+one matrix, minimum 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+3. Stay off 880 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+shortest path, edges removed 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+re-solve until no avoided edge 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+4. Pharmacy, groceries, gas 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+generalized TSP, time windows 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+OR-Tools, 1 vehicle 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+<row>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+5. Split with my wife 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="left" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+pickup–delivery, min total + span 
+\end_layout
+
+\end_inset
+</cell>
+<cell alignment="none" valignment="top" usebox="none">
+\begin_inset Text
+
+\begin_layout Standard
+
+\size footnotesize
+OR-Tools, 2 vehicles 
+\end_layout
+
+\end_inset
+</cell>
+</row>
+</lyxtabular>
+
+\end_inset
+\end_layout
+\begin_layout Standard
+
+\size footnotesize
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\size footnotesize
+OR-Tools only where order and choice interact; the rest is exact and instant 
+\end_layout
+
+\begin_layout Itemize
+
+\size footnotesize
+Stops in a stated order: layered shortest path, exact in 
+\begin_inset Formula $O(k m^2)$
+\end_inset
+
+ for 
+\begin_inset Formula $k$
+\end_inset
+
+ stops of 
+\begin_inset Formula $m$
+\end_inset
+
+ candidates 
+\end_layout
+
+\begin_layout Itemize
+
+\size footnotesize
+Request 4 has 
+\begin_inset Formula $1296$
+\end_inset
+
+ tours; local search finds a good one in 1 s with no proof, and the verifier checks the deadlines, not optimality 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+fi
+\end_layout
+
+\end_inset
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+1. Gas on the right
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+
+\begin_inset Argument 1
+status collapsed
+
+
+\begin_layout Standard
+T
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.4
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+ 
+\size small
+
+\series bold
+Prompt
+\series default
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+
+\begin_inset Quotes eld
+\end_inset
+
+Take me to Levi's Stadium, and get gas on the way at a station on the right so I don't have to turn across traffic.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\series bold
+Result
+\series default
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+The route stops at a 76 station on West Calaveras Boulevard. The station is on the right when the driver arrives, and the stop adds about 30 seconds. 
+\size default
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.58
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename ../screenshots/gm-gas-right.png
+	width 100col%
+
+\end_inset
+
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+2. Coffee during the drive
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+
+\begin_inset Argument 1
+status collapsed
+
+
+\begin_layout Standard
+T
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.4
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+ 
+\size small
+
+\series bold
+Prompt
+\series default
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+
+\begin_inset Quotes eld
+\end_inset
+
+I'm driving to the Sheraton in downtown Sacramento, and I'm going to want coffee about an hour from now. Keep the detour small.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\series bold
+Result
+\series default
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+There was no coffee shop near the exact one-hour point, so the app widened the search slightly and said so. It chose a Peet's in Pleasant Hill, reached about 50 minutes into the trip, with a detour of about 20 seconds. 
+\size default
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.58
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename ../screenshots/gm-coffee-hour.png
+	width 100col%
+
+\end_inset
+
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+iffalse
+\end_layout
+
+\end_inset
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 3
+status collapsed
+
+\begin_layout Plain Layout
+fragile
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Candidates and detours
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+\begin_inset Argument 1
+status collapsed
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+0.44
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+Prefilter by distance to the route (2 km;
+ 80 m for 
+\begin_inset Quotes eld
+\end_inset
+
+on the right
+\begin_inset Quotes erd
+\end_inset
+
+) 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Decide by time:
+ 
+\begin_inset Formula 
+\[
+\delta(p)=t(o,p)+t(p,d)-t(o,d)
+\]
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Two thin matrices (
+\begin_inset Formula $1\times n$
+\end_inset
+
+,
+ 
+\begin_inset Formula $n\times1$
+\end_inset
+
+) screen 
+\begin_inset Formula $n$
+\end_inset
+
+ candidates;
+ the best 6 per errand go on 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Time window:
+ with 
+\begin_inset Formula $T(x)$
+\end_inset
+
+ the elapsed time at 
+\begin_inset Formula $x$
+\end_inset
+
+ on the base route,
+ 
+\begin_inset Formula 
+\[
+S(\tau)=\{x:|T(x)-\tau|\le w\}
+\]
+
+\end_inset
+
+with 
+\begin_inset Formula $w=\max(5,\,0.1\tau)$
+\end_inset
+
+ min,
+ widened to 
+\begin_inset Formula $2w$
+\end_inset
+
+,
+ 
+\begin_inset Formula $3w$
+\end_inset
+
+ if empty 
+\end_layout
+
+\begin_layout Column
+0.54
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\size small
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+begin{semiverbatim}
+\backslash
+scriptsize
+\end_layout
+
+\begin_layout Plain Layout
+SELECT id,
+ name,
+ category,
+ lat,
+ lon
+\end_layout
+
+\begin_layout Plain Layout
+FROM read_parquet('places.parquet')
+\end_layout
+
+\begin_layout Plain Layout
+WHERE lat BETWEEN ?
+ AND ?
+\end_layout
+
+\begin_layout Plain Layout
+  AND lon BETWEEN ?
+ AND ?
+\end_layout
+
+\begin_layout Plain Layout
+  AND category IN ('coffee_shop',
+ 'cafe')
+\end_layout
+
+\begin_layout Plain Layout
+  AND coalesce(confidence,
+ 0) >= 0.5
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+# shapely:
+ offset and position on the route
+\end_layout
+
+\begin_layout Plain Layout
+offset = chunks[tree.nearest(pt)].distance(pt)
+\end_layout
+
+\begin_layout Plain Layout
+along  = line.project(pt) / line.length
+\end_layout
+
+\begin_layout Plain Layout
+
+\end_layout
+
+\begin_layout Plain Layout
+# Valhalla /sources_to_targets
+\end_layout
+
+\begin_layout Plain Layout
+to_c   = matrix([origin],
+ cands)[0][0]
+\end_layout
+
+\begin_layout Plain Layout
+from_c = [r[0] for r in matrix(cands,
+ [dest])[0]]
+\end_layout
+
+\begin_layout Plain Layout
+detour = [a + b - direct
+\end_layout
+
+\begin_layout Plain Layout
+          for a,
+ b in zip(to_c,
+ from_c)]
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+end{semiverbatim}
+\end_layout
+
+\end_inset
+
+ 
+\family typewriter
+\size footnotesize
+nlroute/places.py
+\family default
+,
+ 
+\family typewriter
+planner.py
+\family default
+ (trimmed)
+\size small
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+fi
+\end_layout
+
+\end_inset
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+3. A route that avoids I-880
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+
+\begin_inset Argument 1
+status collapsed
+
+
+\begin_layout Standard
+T
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.4
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+ 
+\size small
+
+\series bold
+Prompt
+\series default
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+
+\begin_inset Quotes eld
+\end_inset
+
+Get me to Oakland airport, but stay off 880.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\series bold
+Result
+\series default
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+The route takes I-680 and I-580 instead of I-880. It takes 63 minutes, about 20 minutes longer than the usual route. 
+\size default
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.58
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename ../screenshots/gm-no-880.png
+	width 100col%
+
+\end_inset
+
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+iffalse
+\end_layout
+
+\end_inset
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 3
+status collapsed
+
+\begin_layout Plain Layout
+fragile
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Avoidance as a fixed-point iteration
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+\begin_inset Argument 1
+status collapsed
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+0.44
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+Valhalla excludes points,
+ not predicates.
+ With rule 
+\begin_inset Formula $\varphi$
+\end_inset
+
+:
+ 
+\begin_inset Formula 
+\begin{align*}
+X_{0} & =\emptyset\\
+r_{k} & =\mathrm{route}(o,d;\,X_{k})\\
+B_{k} & =\{e\in E(r_{k}):\varphi(e)\}\\
+X_{k+1} & =X_{k}\cup m(B_{k})
+\end{align*}
+
+\end_inset
+
+
+\begin_inset Formula $m$
+\end_inset
+
+:
+ edge midpoints.
+ Stop when 
+\begin_inset Formula $B_{k}=\emptyset$
+\end_inset
+
+.
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+\begin_inset Formula $X_{k}$
+\end_inset
+
+ is increasing;
+ at most 8 rounds 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+This run:
+ 
+\begin_inset Formula $k=0$
+\end_inset
+
+:
+ 43.5 min,
+ 
+\begin_inset Formula $|B_{0}|=122$
+\end_inset
+
+;
+ 
+\begin_inset Newline newline
+\end_inset
+
+ 
+\begin_inset Formula $k=1$
+\end_inset
+
+:
+ 63.1 min,
+ 
+\begin_inset Formula $B_{1}=\emptyset$
+\end_inset
+
+.
+ Total 121 ms.
+ 
+\end_layout
+
+\begin_layout Column
+0.54
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\size small
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+begin{semiverbatim}
+\backslash
+scriptsize
+\end_layout
+
+\begin_layout Plain Layout
+for attempt in range(MAX_EXCLUSION_ROUNDS):
+\end_layout
+
+\begin_layout Plain Layout
+    trip = valhalla.route(points,
+ costing,
+ opts,
+\end_layout
+
+\begin_layout Plain Layout
+                          exclude_locations)
+\end_layout
+
+\begin_layout Plain Layout
+    # /trace_attributes:
+ the edges driven
+\end_layout
+
+\begin_layout Plain Layout
+    edges = valhalla.edges_for_route(trip,
+ costing)
+\end_layout
+
+\begin_layout Plain Layout
+    bad = [e for e in edges
+\end_layout
+
+\begin_layout Plain Layout
+           if any(r.violates(e) for r in rules)]
+\end_layout
+
+\begin_layout Plain Layout
+    if not bad:
+\end_layout
+
+\begin_layout Plain Layout
+        break
+\end_layout
+
+\begin_layout Plain Layout
+    new = [midpoint(e) for e in bad
+\end_layout
+
+\begin_layout Plain Layout
+           if midpoint(e) not in exclude_locations]
+\end_layout
+
+\begin_layout Plain Layout
+    if not new:
+\end_layout
+
+\begin_layout Plain Layout
+        break     # stuck:
+ the verifier reports it
+\end_layout
+
+\begin_layout Plain Layout
+    exclude_locations.extend(new)
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+end{semiverbatim}
+\end_layout
+
+\end_inset
+
+ 
+\family typewriter
+\size footnotesize
+nlroute/planner.py
+\family default
+ (trimmed)
+\size small
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+fi
+\end_layout
+
+\end_inset
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+4. Three errands with deadlines
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+
+\begin_inset Argument 1
+status collapsed
+
+
+\begin_layout Standard
+T
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.4
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+ 
+\size small
+
+\series bold
+Prompt
+\series default
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+
+\begin_inset Quotes eld
+\end_inset
+
+It's 5:15 pm. I need a pharmacy before it closes at six, groceries, and gas, in any order, and I have to be home by 6:15.
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\series bold
+Result
+\series default
+
+\end_layout
+
+\begin_layout Columns
+
+\size small
+The app chooses the stores and their order. It reaches Walgreens at 5:23, before the pharmacy closes at 6:00, and gets home at 5:25, before the 6:15 deadline. 
+\size default
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.58
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics
+	filename ../screenshots/gm-errands.png
+	width 100col%
+
+\end_inset
+
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\begin_inset Separator plain
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+iffalse
+\end_layout
+
+\end_inset
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 3
+status collapsed
+
+\begin_layout Plain Layout
+fragile
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Errands as a generalized TSP with time windows
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+\begin_inset Argument 1
+status collapsed
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+0.44
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+Groups 
+\begin_inset Formula $G_{1},\dots,G_{m}$
+\end_inset
+
+ (pharmacies,
+ groceries,
+ stations);
+ arc times 
+\begin_inset Formula $t_{ij}$
+\end_inset
+
+,
+ stop times 
+\begin_inset Formula $s_{i}$
+\end_inset
+
+ 
+\begin_inset Formula 
+\begin{align*}
+\min\  & {\textstyle \sum_{i,j}t_{ij}\,x_{ij}}\\
+\text{s.t.}\  & {\textstyle \sum_{i\in G_{k}}y_{i}=1\quad\forall k}\\
+ & T_{j}\ge T_{i}+s_{i}+t_{ij}\ \text{ if }x_{ij}=1\\
+ & T_{i}\le\text{close}_{i},\quad T_{\text{home}}\le\text{deadline}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+\begin_inset Quotes eld
+\end_inset
+
+Exactly one
+\begin_inset Quotes erd
+\end_inset
+
+:
+ a disjunction with max cardinality 1 and penalty 
+\begin_inset Formula $10^{7}$
+\end_inset
+
+;
+ a skipped group is reported infeasible 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+20 nodes:
+ matrix 0.4 s;
+ guided local search,
+ 1 s limit;
+ path re-costed from the matrix 
+\end_layout
+
+\begin_layout Column
+0.54
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\size small
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+begin{semiverbatim}
+\backslash
+scriptsize
+\end_layout
+
+\begin_layout Plain Layout
+manager = RoutingIndexManager(n,
+ 1,
+ [orig],
+ [home])
+\end_layout
+
+\begin_layout Plain Layout
+routing = RoutingModel(manager)
+\end_layout
+
+\begin_layout Plain Layout
+cb = routing.RegisterTransitCallback(transit)
+\end_layout
+
+\begin_layout Plain Layout
+routing.SetArcCostEvaluatorOfAllVehicles(cb)
+\end_layout
+
+\begin_layout Plain Layout
+routing.AddDimension(cb,
+ 0,
+ 24*3600,
+ True,
+ "Time")
+\end_layout
+
+\begin_layout Plain Layout
+T = routing.GetDimensionOrDie("Time")
+\end_layout
+
+\begin_layout Plain Layout
+for group in groups:
+\end_layout
+
+\begin_layout Plain Layout
+    routing.AddDisjunction(
+\end_layout
+
+\begin_layout Plain Layout
+        [manager.NodeToIndex(i) for i in group],
+\end_layout
+
+\begin_layout Plain Layout
+        10**7,
+ 1)
+\end_layout
+
+\begin_layout Plain Layout
+for node,
+ latest in windows.items():
+\end_layout
+
+\begin_layout Plain Layout
+    T.CumulVar(manager.NodeToIndex(node)) 
+\backslash
+textbackslash
+\end_layout
+
+\begin_layout Plain Layout
+     .SetMax(latest)
+\end_layout
+
+\begin_layout Plain Layout
+T.CumulVar(routing.End(0)).SetMax(deadline)
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+end{semiverbatim}
+\end_layout
+
+\end_inset
+
+ 
+\family typewriter
+\size footnotesize
+nlroute/solver.py
+\family default
+:
+ 
+\family typewriter
+solve_any_order
+\family default
+ (trimmed)
+\size small
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+fi
+\end_layout
+
+\end_inset
+
+\end_layout
+
+\begin_layout Frame
+
+\begin_inset Argument 4
+status collapsed
+
+
+\begin_layout Standard
+5. Splitting tasks between two drivers
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+
+\begin_inset Argument 1
+status collapsed
+
+
+\begin_layout Standard
+T
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.44
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+ 
+\size footnotesize
+
+\series bold
+Prompt
+\series default
+
+\end_layout
+
+\begin_layout Columns
+
+\size footnotesize
+
+\begin_inset Quotes eld
+\end_inset
+
+It's 3:00 pm. Another driver is at Fremont BART. Between us, someone needs to pick up a child at Stratford School and get the child home by 3:30. We also need groceries, which will take about 30 minutes, and a stop at CVS. Then we both go home. Who should do what?
+\begin_inset Quotes erd
+\end_inset
+
+
+\end_layout
+
+\begin_layout Columns
+
+\size footnotesize
+
+\begin_inset VSpace medskip
+\end_inset
+
+
+\series bold
+Result
+\series default
+
+\end_layout
+
+\begin_layout Columns
+
+\size footnotesize
+Driver 1 shops at Trader Joe's and gets home at 3:40. Driver 2 picks up the child, gets home at 3:29, then stops at CVS and is home again at 3:38. If either driver did everything alone, the work would finish at 3:58 or 4:17. 
+\size default
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+begin{column}
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+{
+\end_layout
+
+\end_inset
+
+0.54
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+}
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+centering
+\end_layout
+
+\end_inset
+
+ 
+\begin_inset Graphics 
+	filename ../screenshots/gm-team.png
+	keepAspectRatio
+	clip
+	special trim=452 0 0 0,height=0.65\textheight
+
+\end_inset
+
+ 
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+end{column}
+\end_layout
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+iffalse
+\end_layout
+
+\end_inset
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 3
+status collapsed
+
+\begin_layout Plain Layout
+fragile
+\end_layout
+
+\end_inset
+
+
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Two vehicles,
+ pickup and delivery
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+\begin_inset Argument 1
+status collapsed
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+0.44
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+
+\size small
+Vehicles 
+\begin_inset Formula $v\in\{1,2\}$
+\end_inset
+
+ start where each driver is;
+ open routes via a virtual end with 
+\begin_inset Formula $t_{ie}=0$
+\end_inset
+
+ 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Pickup 
+\begin_inset Formula $p$
+\end_inset
+
+,
+ drop 
+\begin_inset Formula $d$
+\end_inset
+
+:
+ same vehicle,
+ 
+\begin_inset Formula $T_{p}\le T_{d}$
+\end_inset
+
+,
+ 
+\begin_inset Formula $T_{d}\le$
+\end_inset
+
+ 15:30 
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+Objective:
+ total time of both drivers plus the span 
+\begin_inset Formula 
+\begin{align*}
+\min\  & {\textstyle \sum_{v}\sum_{i,j}(t_{ij}+s_{i})\,x^{v}_{ij}}\\
+ & +{\textstyle \max_{v}T^{v}_{e}-\min_{v}T^{v}_{s}}
+\end{align*}
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+
+\size small
+The span term makes splitting worthwhile.
+ 20 nodes:
+ matrix 0.3 s,
+ search 2 s 
+\end_layout
+
+\begin_layout Column
+0.54
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+
+\size small
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+begin{semiverbatim}
+\backslash
+scriptsize
+\end_layout
+
+\begin_layout Plain Layout
+manager = RoutingIndexManager(n + 1,
+ 2,
+\end_layout
+
+\begin_layout Plain Layout
+                              [me,
+ wife],
+ [end,
+ end])
+\end_layout
+
+\begin_layout Plain Layout
+routing = RoutingModel(manager)
+\end_layout
+
+\begin_layout Plain Layout
+T.SetGlobalSpanCostCoefficient(1)
+\end_layout
+
+\begin_layout Plain Layout
+for group in groups:
+     # any grocery,
+ any CVS
+\end_layout
+
+\begin_layout Plain Layout
+    routing.AddDisjunction(
+\end_layout
+
+\begin_layout Plain Layout
+        [manager.NodeToIndex(i) for i in group],
+\end_layout
+
+\begin_layout Plain Layout
+        10**7,
+ 1)
+\end_layout
+
+\begin_layout Plain Layout
+p = manager.NodeToIndex(school)
+\end_layout
+
+\begin_layout Plain Layout
+d = manager.NodeToIndex(home)
+\end_layout
+
+\begin_layout Plain Layout
+routing.AddPickupAndDelivery(p,
+ d)
+\end_layout
+
+\begin_layout Plain Layout
+solver.Add(routing.VehicleVar(p)
+\end_layout
+
+\begin_layout Plain Layout
+           == routing.VehicleVar(d))
+\end_layout
+
+\begin_layout Plain Layout
+solver.Add(T.CumulVar(p) <= T.CumulVar(d))
+\end_layout
+
+\begin_layout Plain Layout
+T.CumulVar(d).SetMax(deadline)
+\end_layout
+
+\begin_layout Plain Layout
+
+\backslash
+end{semiverbatim}
+\end_layout
+
+\end_inset
+
+ 
+\family typewriter
+\size footnotesize
+nlroute/solver.py
+\family default
+:
+ 
+\family typewriter
+solve_team
+\family default
+ (trimmed)
+\size small
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Standard
+\begin_inset ERT
+status open
+
+\begin_layout Plain Layout
+
+\backslash
+fi
+\end_layout
+
+\end_inset
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Sending a driver their part
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+\begin_inset Argument 1
+status collapsed
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+0.66
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Send to Wife
+\begin_inset Quotes erd
+\end_inset
+
+:
+ a link with an unguessable token,
+ valid 30 minutes;
+ no account,
+ no app 
+\end_layout
+
+\begin_layout Itemize
+The page shows her part of the plan and can share her location back 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Start turn-by-turn
+\begin_inset Quotes erd
+\end_inset
+
+:
+ Ferrostar in her browser,
+ on the plan's exact route request (exclusions kept on reroute) 
+\end_layout
+
+\begin_layout Itemize
+On expiry the position is deleted and the link returns 410 
+\end_layout
+
+\begin_layout Itemize
+Limits:
+ browsers share location only while the page is open;
+ Google Maps location sharing has no API 
+\end_layout
+
+\begin_layout Column
+0.26
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+\begin_inset Graphics
+	filename ../screenshots/gm-team-phone.png
+	lyxscale 25
+	keepAspectRatio
+	special height=0.78\textheight
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+Verification
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Every route is checked independently of the planner
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+The final line is map-matched again (
+\family typewriter
+/trace_attributes
+\family default
+);
+ checks read those edges 
+\end_layout
+
+\begin_layout Itemize
+Checked:
+ stops reached and in order;
+ roads and areas avoided;
+ detour bounds;
+ side of road on arrival;
+ 
+\begin_inset Quotes eld
+\end_inset
+
+about 
+\begin_inset Formula $N$
+\end_inset
+
+ min in
+\begin_inset Quotes erd
+\end_inset
+
+;
+ closing times;
+ deadline;
+ pickup before drop in the same car 
+\end_layout
+
+\begin_layout Itemize
+A failed check is shown with the measured value;
+ the route is still drawn 
+\end_layout
+
+\begin_layout Itemize
+Retry loops fix loud failures
+\end_layout
+
+\begin_layout Itemize
+Silent failures seen in practice:
+ an exclusion polygon rejected by the engine,
+ a stop skipped by the solver,
+ a deadline missed by a relaxed solve 
+\end_layout
+
+\end_deeper
+\begin_layout Section
+Where it breaks
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Data:
+ the verifier cannot catch a wrong category
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Overture places with confident,
+ wrong categories:
+ 
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Oportun (
+\begin_inset Formula $\approx$
+\end_inset
+
+20 sites):
+ pharmacy;
+ a lender (confidence 0.92–0.99) 
+\end_layout
+
+\begin_layout Itemize
+Evernote:
+ gas station;
+ Biocardia:
+ pharmacy 
+\end_layout
+
+\begin_layout Itemize
+Hills Bros.
+\begin_inset space \space{}
+\end_inset
+
+Coffee Plant:
+ coffee shop;
+ a historic building 
+\end_layout
+
+\begin_layout Itemize
+Gano Excel (Fairfield):
+ coffee shop;
+ a coffee company's business-park unit 
+\end_layout
+
+\end_deeper
+\begin_layout Itemize
+The route does stop where the data says a pharmacy is:
+ geometric checks pass 
+\end_layout
+
+\begin_layout Itemize
+Mitigation:
+ a small,
+ visible deny list in code;
+ better:
+ report upstream 
+\end_layout
+
+\begin_layout Itemize
+Geocoding ranks names,
+ not meaning:
+ 
+\begin_inset Quotes eld
+\end_inset
+
+Oakland airport
+\begin_inset Quotes erd
+\end_inset
+
+ 
+\begin_inset Formula $\to$
+\end_inset
+
+ Oakland Airport Executive Hotel,
+ until the OSM tag had to match the named kind 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Engines:
+ silent failures
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Valhalla matrices:
+ 
+\begin_inset Formula $\approx$
+\end_inset
+
+2% of places null in their entire row and column (8 of 400 shops);
+ all snapped to a parking aisle or service road;
+ 
+\family typewriter
+/route
+\family default
+ reaches them.
+ Fix:
+ re-snap those points to the street 
+\end_layout
+
+\begin_layout Itemize
+Default 
+\family typewriter
+max_exclude_polygons_length
+\family default
+:
+ 10 km total perimeter;
+ over it the request is rejected,
+ and the easy fallback silently drops the constraint 
+\end_layout
+
+\begin_layout Itemize
+Ollama:
+ tool-call arguments must be objects,
+ not JSON strings;
+ every turn after a tool call failed 
+\end_layout
+
+\begin_layout Itemize
+Ollama:
+ two context sizes (8k,
+ 16k) load two copies of a 35B model;
+ on a 12 GB GPU the second load crashed 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Impossible requests:
+ say no
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Columns
+\begin_inset Argument 1
+status collapsed
+
+\begin_layout Plain Layout
+T
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Column
+0.38
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Home by five
+\begin_inset Quotes erd
+\end_inset
+
+ at 4:55 with three errands:
+ OR-Tools relaxes the deadline;
+ the verifier fails it:
+ arrive 5:05 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+A car wash under one minute out of the way
+\begin_inset Quotes erd
+\end_inset
+
+:
+ the closest adds 3.2 min 
+\end_layout
+
+\begin_layout Itemize
+Never a plausible route that quietly violates the request 
+\end_layout
+
+\begin_layout Column
+0.6
+\begin_inset ERT
+status collapsed
+
+\begin_layout Plain Layout
+
+\backslash
+textwidth
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\end_deeper
+\begin_layout Columns
+\begin_inset Graphics
+	filename ../screenshots/breaks-deadline.png
+	lyxscale 25
+	width 100line%
+
+\end_inset
+
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+What constraints cannot express yet
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Downtown
+\begin_inset Quotes erd
+\end_inset
+
+:
+ no usable boundary in OSM;
+ a gazetteer circle 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+The Bay Bridge
+\begin_inset Quotes erd
+\end_inset
+
+:
+ the name is in 
+\family typewriter
+bridge:name
+\family default
+,
+ absent from the routing graph;
+ matched by footprint for a short list 
+\end_layout
+
+\begin_layout Itemize
+\begin_inset Quotes eld
+\end_inset
+
+Before it closes
+\begin_inset Quotes erd
+\end_inset
+
+:
+ no opening hours in the open places data;
+ the driver must state the time 
+\end_layout
+
+\begin_layout Itemize
+A named place (
+\begin_inset Quotes eld
+\end_inset
+
+Tartine
+\begin_inset Quotes erd
+\end_inset
+
+) is resolved to one point before solving;
+ only categories and chains (
+\begin_inset Quotes eld
+\end_inset
+
+a Safeway
+\begin_inset Quotes erd
+\end_inset
+
+) reach the solver as alternatives
+\end_layout
+
+\begin_layout Itemize
+A verifier that shares the planner's definitions shares its mistakes:
+ checks need independent data,
+ not only independent code 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+
+\end_layout
+
+\begin_layout Section
+Conclusion
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Summary
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Enumerate
+Give the language model one job:
+ fill a typed schema.
+ Open engines do the geometry and the optimization.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Constraints are predicates over graph edges,
+ not road names;
+ iterate until the route satisfies them.
+ 
+\end_layout
+
+\begin_layout Enumerate
+Verify the final route from fresh data,
+ and report failures with the measured value.
+ 
+\end_layout
+
+\end_deeper
+\begin_layout Standard
+\begin_inset Separator plain
+\end_inset
+
+
+\end_layout
+
+\begin_layout Frame
+\begin_inset Argument 4
+status collapsed
+
+\begin_layout Plain Layout
+Thank you
+\end_layout
+
+\end_inset
+
+
+\end_layout
+
+\begin_deeper
+\begin_layout Itemize
+Code:
+ github.com/johngcarlsson-usc/TurnByTurn 
+\end_layout
+
+\begin_layout Itemize
+Built on Valhalla,
+ OpenStreetMap,
+ Overture Maps,
+ DuckDB,
+ OR-Tools,
+ Photon,
+ Nominatim,
+ Caltrans PeMS,
+ Ferrostar,
+ MapLibre,
+ OpenFreeMap,
+ Open-Meteo,
+ Ollama 
+\end_layout
+
+\end_deeper
+\end_body
+\end_document
